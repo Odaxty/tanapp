@@ -1,12 +1,14 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --hover: rgba(255, 255, 255, 0.10);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --hover: rgba(0, 0, 0, 0.10);
   }
 }
 
@@ -177,6 +179,31 @@ input[type=text] {
   flex-direction: row;
   justify-content: flex-start;
   gap: 1rem;
+}
+
+.suggestions-container {
+  background-color: var(--foreground);
+  border-radius: 25px;
+  margin-top: 25px;
+  position: absolute;
+  width: 55.875rem;
+  padding: 10px;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.suggestion-item {
+  width: 100%;
+  border-radius: 15px;
+  padding: 5px;
+  margin-bottom: 5px;
+}
+
+.suggestion-item:hover {
+  background-color: var(--hover);
+}
+
+.suggestion-item-text {
+  cursor: pointer;
 }
 
 .infos {
