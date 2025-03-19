@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { fetchStops } from '../services/api';
 
-const SearchBar = () => {
+const SearchBar = ({ setSelectedStop }) => {
     const [search, setSearch] = useState('');
     const [suggestions, setSuggestions] = useState([]);
     const [allStops, setAllStops] = useState([]);
@@ -38,6 +38,11 @@ const SearchBar = () => {
         setSuggestions(finalSuggestions);
     };
 
+    const clickOnStop = (nameStop) => {
+        setSelectedStop(nameStop);
+        setSearch("")
+    };
+
     return (
         <div>
             <input
@@ -51,7 +56,10 @@ const SearchBar = () => {
                 <div className="suggestions-container">
                     {suggestions.map((suggestion, index) => (
                         <div key={index} className="suggestion-item">
-                            {suggestion.libelle}
+                            <p className="suggestion-item-text" onClick={ () =>
+                                clickOnStop(event.target.textContent)
+                            }>
+                                {suggestion.libelle}</p>
                         </div>
                     ))}
                 </div>

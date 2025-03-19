@@ -100,7 +100,7 @@ const Stop = ({ stopName, onBack }) => {
 
         if (stopCodes.length > 0) {
             fetchAllLinesInfo();
-            intervalId = setInterval(fetchAllLinesInfo, 30000);
+            intervalId = setInterval(fetchAllLinesInfo, 15000);
         }
 
         return () => {
