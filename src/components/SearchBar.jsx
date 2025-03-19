@@ -26,11 +26,11 @@ const SearchBar = () => {
         setSearch(value);
 
         const startsWithSuggestions = allStops
-            .filter(stop => stop.toLowerCase().startsWith(value.toLowerCase()))
+            .filter(stop => stop.libelle.toLowerCase().startsWith(value.toLowerCase()))
             .slice(0, 3);
 
         const containsSuggestions = allStops
-            .filter(stop => stop.toLowerCase().includes(value.toLowerCase()) && !startsWithSuggestions.includes(stop))
+            .filter(stop => stop.libelle.toLowerCase().includes(value.toLowerCase()) && !startsWithSuggestions.includes(stop))
             .slice(0, 3 - startsWithSuggestions.length);
 
         const finalSuggestions = [...startsWithSuggestions, ...containsSuggestions];
@@ -48,13 +48,15 @@ const SearchBar = () => {
                 placeholder="Rechercher un arrêt..."
             />
             {search && (
-                <ul>
+                <div className="suggestions-container">
                     {suggestions.map((suggestion, index) => (
-                        <li key={index}>{suggestion}</li>
+                        <div key={index} className="suggestion-item">
+                            {suggestion.libelle}
+                        </div>
                     ))}
-                </ul>
+                </div>
             )}
-        </div >
+        </div>
     );
 };
 
