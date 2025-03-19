@@ -13,19 +13,22 @@
 @font-face {
   font-family: "Chillax Variable";
   font-style: normal;
-  src: url("../../public/fonts/Chillax-Regular.otf") format("woff2");
+  font-weight: 500;
+  src: url("../../public/fonts/Chillax-Regular.otf") format("opentype");
 }
 
 @font-face {
   font-family: "Chillax Variable";
   font-style: normal;
-  src: url("../../public/fonts/Chillax-Bold.otf") format("woff2");
+  font-weight: 600;
+  src: url("../../public/fonts/Chillax-Semibold.otf") format("opentype");
 }
 
 @font-face {
   font-family: "Chillax Variable";
   font-style: normal;
-  src: url("../../public/fonts/Chillax-ExtraLight.otf") format("woff2");
+  font-weight: 650;
+  src: url("../../public/fonts/Chillax-ExtraLight.otf") format("opentype");
 }
 
 @font-face {
@@ -157,6 +160,10 @@ input[type=text] {
 
 .block-link {
   cursor: pointer;
+}
+
+.pic {
+  display: flex;
 }
 
 .pic img {
