@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { fetchStops } from '../services/api';
 
-const SearchBar = ({ setSelectedStop }) => {
+const SearchBar = ({ setSelectedStop, onSearchClick, isFavorite }) => {
     const [search, setSearch] = useState('');
     const [suggestions, setSuggestions] = useState([]);
     const [allStops, setAllStops] = useState([]);
@@ -40,18 +40,26 @@ const SearchBar = ({ setSelectedStop }) => {
 
     const clickOnStop = (nameStop) => {
         setSelectedStop(nameStop);
-        setSearch("")
+        setSearch("");
+    };
+
+    const handleButtonClick = () => {
+        onSearchClick(); // Appel de la fonction passée en prop pour changer l'état dans Main
     };
 
     return (
-        <div>
+        <div className="searchBar">
             <input
-                className="searchBar"
+                className="searchBarInput"
                 type="text"
                 value={search}
                 onChange={handleInputChange}
                 placeholder="Rechercher un arrêt..."
             />
+            <div className="searchBarLine"></div>
+            <button className="searchBarButton" onClick={handleButtonClick}>
+                <img src={isFavorite ? "../../location.svg" : "../../favorite.svg"} alt=""/>
+            </button>
             {search && (
                 <div className="suggestions-container">
                     {suggestions.map((suggestion, index) => (

@@ -97,7 +97,6 @@ const ClosestStop = ({ stopNames, onBack }) => {
                     </div>
                 ))
             )}
-            <button className="button-back" onClick={onBack}>Retour</button>
         </div>
     );
 };
