@@ -23,3 +23,37 @@ export const fetchStops = async () => {
         return [];
     }
 };
+
+
+export const fetchDisruptions = async () => {
+    const baseUrl = 'https://data.nantesmetropole.fr/api/explore/v2.1/catalog/datasets/244400404_info-trafic-tan-temps-reel/records?limit=100';
+
+    try {
+        const response = await axios.get(baseUrl);
+
+        const records = response.data.results || [];
+
+        const affectedLines = new Set();
+
+        records.forEach(record => {
+            try {
+                const tronconsArray = record.troncons.split(';');
+
+                tronconsArray.forEach(troncon => {
+                    const lineNumber = troncon.split('/')[0].replace('[', '');
+                    if (lineNumber) {
+                        affectedLines.add(lineNumber);
+                    }
+                });
+            } catch (error) {
+                console.error('Erreur de parsing des tronçons:', error);
+            }
+        });
+
+        console.log('Lignes concernées par une info trafic:', Array.from(affectedLines));
+        return Array.from(affectedLines);
+    } catch (error) {
+        console.error('Erreur lors de la récupération des perturbations:', error);
+        return [];
+    }
+};

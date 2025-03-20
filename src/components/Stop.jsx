@@ -1,12 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { fetchStopTimes, fetchStops } from '../services/api';
+import { fetchStopTimes, fetchStops, fetchDisruptions } from '../services/api'; // Modif ici
 
 const Stop = ({ stopName, onBack }) => {
     const [stopCodes, setStopCodes] = useState([]);
     const [linesInfo, setLinesInfo] = useState({});
     const [error, setError] = useState(null);
+    const [affectedLines, setAffectedLines] = useState([]); // Modif ici
 
     useEffect(() => {
         const fetchStopCodes = async () => {
@@ -67,7 +68,7 @@ const Stop = ({ stopName, onBack }) => {
                                 }
                             }
                         }
-                    })
+                    });
                 } catch (error) {
                     console.error(`Erreur lors de la récupération des lignes pour le code ${code}:`, error);
                 }
@@ -96,10 +97,14 @@ const Stop = ({ stopName, onBack }) => {
             setLinesInfo(formattedLinesInfo);
         };
 
-
+        const fetchDisruptionsData = async () => { // Modif ici
+            const disruptions = await fetchDisruptions();
+            setAffectedLines(disruptions);
+        };
 
         if (stopCodes.length > 0) {
             fetchAllLinesInfo();
+            fetchDisruptionsData(); // Modif ici
             intervalId = setInterval(fetchAllLinesInfo, 30000);
         }
 
@@ -110,26 +115,28 @@ const Stop = ({ stopName, onBack }) => {
 
     return (
         <div className="stop">
-            <div className="infos">
-                <div className="name">
-                    <h2>{stopName}</h2>
-                </div>
-                <div className="lines">
-                    {error ? (
-                        <p>{error}</p>
-                    ) : (
-                        Object.keys(linesInfo).length > 0 ? (
-                            Object.keys(linesInfo).map((line, index) => (
-                                <img
-                                    key={index}
-                                    src={`../../pics/Picto ligne ${line}.svg`}
-                                    alt={`Ligne ${line}`}
-                                />
-                            ))
+            <div className="presentation">
+                <div className="infos">
+                    <div className="name">
+                        <h2>{stopName}</h2>
+                    </div>
+                    <div className="lines">
+                        {error ? (
+                            <p>{error}</p>
                         ) : (
-                            <p>Aucune ligne disponible</p>
-                        )
-                    )}
+                            Object.keys(linesInfo).length > 0 ? (
+                                Object.keys(linesInfo).map((line, index) => (
+                                    <img
+                                        key={index}
+                                        src={`../../pics/Picto ligne ${line}.svg`}
+                                        alt={`Ligne ${line}`}
+                                    />
+                                ))
+                            ) : (
+                                <p>Aucune ligne disponible</p>
+                            )
+                        )}
+                    </div>
                 </div>
             </div>
             {Object.keys(linesInfo).map((line, index) => (
@@ -166,6 +173,9 @@ const Stop = ({ stopName, onBack }) => {
                             )
                         )).slice(0, 2)}
                     </div>
+                    {affectedLines.includes(line) && (
+                        <div className="alerte">!</div> // Modif ici
+                    )}
                 </div>
             ))}
             <button className="button-back" onClick={onBack}>Retour</button>
