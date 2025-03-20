@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { fetchStops } from '../services/api';
 
-const SearchBar = () => {
+const SearchBar = ({ setSelectedStop }) => {
     const [search, setSearch] = useState('');
     const [suggestions, setSuggestions] = useState([]);
     const [allStops, setAllStops] = useState([]);
@@ -26,16 +26,21 @@ const SearchBar = () => {
         setSearch(value);
 
         const startsWithSuggestions = allStops
-            .filter(stop => stop.toLowerCase().startsWith(value.toLowerCase()))
+            .filter(stop => stop.libelle.toLowerCase().startsWith(value.toLowerCase()))
             .slice(0, 3);
 
         const containsSuggestions = allStops
-            .filter(stop => stop.toLowerCase().includes(value.toLowerCase()) && !startsWithSuggestions.includes(stop))
+            .filter(stop => stop.libelle.toLowerCase().includes(value.toLowerCase()) && !startsWithSuggestions.includes(stop))
             .slice(0, 3 - startsWithSuggestions.length);
 
         const finalSuggestions = [...startsWithSuggestions, ...containsSuggestions];
 
         setSuggestions(finalSuggestions);
+    };
+
+    const clickOnStop = (nameStop) => {
+        setSelectedStop(nameStop);
+        setSearch("")
     };
 
     return (
@@ -48,13 +53,18 @@ const SearchBar = () => {
                 placeholder="Rechercher un arrêt..."
             />
             {search && (
-                <ul>
+                <div className="suggestions-container">
                     {suggestions.map((suggestion, index) => (
-                        <li key={index}>{suggestion}</li>
+                        <div key={index} className="suggestion-item">
+                            <p className="suggestion-item-text" onClick={ () =>
+                                clickOnStop(event.target.textContent)
+                            }>
+                                {suggestion.libelle}</p>
+                        </div>
                     ))}
-                </ul>
+                </div>
             )}
-        </div >
+        </div>
     );
 };
 

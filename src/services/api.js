@@ -14,7 +14,7 @@ export const fetchStops = async () => {
         const response = await axios.get(baseUrl);
 
         response.data.forEach(stop => {
-            stops.push({ codeLieu: stop.codeLieu, libelle: stop.libelle });
+            stops.push({ codeLieu: stop.codeLieu, libelle: stop.libelle, ligne: stop.ligne });
         });
 
         return stops;
@@ -54,6 +54,20 @@ export const fetchDisruptions = async () => {
         return Array.from(affectedLines);
     } catch (error) {
         console.error('Erreur lors de la récupération des perturbations:', error);
+        return [];
+    }
+};
+
+
+export const fetchClosestStops = async (lat, long) => {
+    const baseUrl = `https://open.tan.fr/ewp/arrets.json/${lat}/${long}`;
+
+    try {
+        const response = await axios.get(baseUrl);
+        console.log(lat, long)
+        return response.data.map(stop => stop.libelle);
+    } catch (error) {
+        console.error("Erreur lors de la récupération des arrêts les plus proches :", error);
         return [];
     }
 };

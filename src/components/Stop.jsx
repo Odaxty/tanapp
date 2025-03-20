@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { fetchStopTimes, fetchStops, fetchDisruptions } from '../services/api'; // Modif ici
+import { fetchStopTimes, fetchStops } from '../services/api';
 
 const Stop = ({ stopName, onBack }) => {
     const [stopCodes, setStopCodes] = useState([]);
@@ -104,8 +104,8 @@ const Stop = ({ stopName, onBack }) => {
 
         if (stopCodes.length > 0) {
             fetchAllLinesInfo();
-            fetchDisruptionsData(); // Modif ici
-            intervalId = setInterval(fetchAllLinesInfo, 30000);
+            fetchDisruptionsData();
+            intervalId = setInterval(fetchAllLinesInfo, 15000);
         }
 
         return () => {
@@ -115,7 +115,6 @@ const Stop = ({ stopName, onBack }) => {
 
     return (
         <div className="stop">
-            <div className="presentation">
                 <div className="infos">
                     <div className="name">
                         <h2>{stopName}</h2>
@@ -137,7 +136,6 @@ const Stop = ({ stopName, onBack }) => {
                             )
                         )}
                     </div>
-                </div>
             </div>
             {Object.keys(linesInfo).map((line, index) => (
                 <div key={index} className="block-plus">
