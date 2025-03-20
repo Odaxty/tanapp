@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { fetchStopTimes, fetchStops } from '../services/api';
+import { fetchStopTimes, fetchStops,fetchDisruptions  } from '../services/api';
 
 const Stop = ({ stopName, onBack }) => {
     const [stopCodes, setStopCodes] = useState([]);
