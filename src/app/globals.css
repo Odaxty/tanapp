@@ -124,6 +124,7 @@ a {
   height: 100%;
   width: 90%;
   border: none;
+  color: #000;
   border-radius: 2.1875rem 0 0 2.1875rem;
   background-color: transparent;
 }
@@ -207,7 +208,7 @@ input[type=text] {
 .suggestions-container {
   background-color: var(--foreground);
   border-radius: 25px;
-  margin-top: 25px;
+  top: 6.375rem;
   position: absolute;
   width: 55.875rem;
   padding: 10px;
