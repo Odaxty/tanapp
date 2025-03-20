@@ -5,6 +5,7 @@ import Stop from '@/components/Stop';
 import Favorite from '@/components/Favorite';
 import { fetchClosestStops } from "@/services/api";
 import ClosestStop from "@/components/ClosestStop";
+import AllLines from "@/components/AllLines";
 
 const Main = () => {
     const [closestStops, setClosestStops] = useState([]); // Liste des arrêts les plus proches
@@ -75,6 +76,7 @@ const Main = () => {
                     </div>
                 )}
             </div>
+            <AllLines/>
         </div>
     );
 };
