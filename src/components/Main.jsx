@@ -1,61 +1,61 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import SearchBar from "@/components/SearchBar";
 import Stop from '@/components/Stop';
+import Favorite from '@/components/Favorite';
+import { fetchClosestStops } from "@/services/api";
+import ClosestStop from "@/components/ClosestStop";
 
 const Main = () => {
+    const [closestStops, setClosestStops] = useState([]); // Liste des arrêts les plus proches
     const [selectedStop, setSelectedStop] = useState(null);
+    const [location, setLocation] = useState({ latitude: null, longitude: null });
 
-    const handleStopClick = (stopName) => {
-        setSelectedStop(stopName);
-    }
+    const updateLocation = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const { latitude, longitude } = position.coords;
 
-    const busTimes = [
-        { temps: 'Proche' },
-        { temps: '2mn' },
-        { temps: '5mn' },
-    ];
+                    // Vérification si les nouvelles coordonnées sont différentes
+                    if (latitude !== location.latitude || longitude !== location.longitude) {
+                        setLocation({ latitude, longitude }); // Mise à jour des coordonnées
+
+                        // Appel à fetchClosestStops pour récupérer une liste d'arrêts
+                        const stops = await fetchClosestStops(latitude, longitude);
+                        setClosestStops(stops); // Met à jour la liste des arrêts les plus proches
+                    }
+                },
+                (error) => {
+                    console.error("Erreur de géolocalisation:", error);
+                }
+            );
+        } else {
+            console.error("La géolocalisation n'est pas supportée par ce navigateur.");
+        }
+    };
+
+    useEffect(() => {
+        updateLocation();
+        const interval = setInterval(updateLocation, 15000); // Mise à jour toutes les 15 secondes
+
+        return () => clearInterval(interval); // Nettoyage de l'intervalle
+    }, [location.latitude, location.longitude]); // Ajout des propriétés `latitude` et `longitude` comme dépendances
 
     return (
         <div>
-            <SearchBar
-                setSelectedStop={setSelectedStop}
-            />
+            <SearchBar setSelectedStop={setSelectedStop} />
             <div className="home-page">
                 {!selectedStop && <h1 className="title">Arrêts favoris</h1>}
 
                 {selectedStop ? (
-                    <Stop
-                        stopName={selectedStop}
-                        onBack={() => setSelectedStop(null)}
-                    />
+                    <Stop stopName={selectedStop} onBack={() => setSelectedStop(null)} />
                 ) : (
-                    <div className="block-link" onClick={() => setSelectedStop('Commerce')}>
-                        <div className="block">
-                            <div className="picinfos">
-                                <div className="pic">
-                                    <img src="../../pics/Picto ligne C6.svg" alt="Ligne C6" />
-                                </div>
-                                <div className="infos">
-                                    <h2>C6 - Bonde</h2>
-                                    <h3>&gt; Chantrerie Grandes Écoles</h3>
-                                </div>
-                            </div>
-                            <div className="time">
-                                {busTimes.length > 0 ? (
-                                    <p>
-                                        {busTimes[0].temps === 'Proche'
-                                            ? 'Proche'
-                                            : busTimes[0].temps.replace('mn', ' min')}
-                                    </p>
-                                ) : (
-                                    <p>Chargement...</p>
-                                )}
-                                <img src="../../icon_rt.svg" alt="Actualiser" />
-                            </div>
-                        </div>
-                    </div>
+                    <Favorite />
                 )}
+            </div>
+            <div>
+                <ClosestStop stopNames={closestStops} onBack={() => setSelectedStop(null)} />
             </div>
         </div>
     );
