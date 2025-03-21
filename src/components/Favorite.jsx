@@ -1,4 +1,4 @@
-const Favorite = () => {
+const Favorite = ({setSelectedStop}) => {
 
 
     const busTimes = [

@@ -65,7 +65,17 @@ export const fetchClosestStops = async (lat, long) => {
     try {
         const response = await axios.get(baseUrl);
         console.log(lat, long)
-        return response.data.map(stop => stop.libelle);
+        console.log(response.data.map(stop => stop.libelle))
+        console.log(
+            response.data.map(stop => ({
+            libelle: stop.libelle,
+            distance: stop.distance
+        }))
+        )
+        return response.data.map(stop => ({
+            libelle: stop.libelle,
+            distance: stop.distance
+        }));
     } catch (error) {
         console.error("Erreur lors de la récupération des arrêts les plus proches :", error);
         return [];

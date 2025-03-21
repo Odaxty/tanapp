@@ -58,7 +58,7 @@ const SearchBar = ({ setSelectedStop, onSearchClick, isFavorite }) => {
             />
             <div className="searchBarLine"></div>
             <button className="searchBarButton" onClick={handleButtonClick}>
-                <img src={isFavorite ? "../../location.svg" : "../../favorite.svg"} alt=""/>
+                <img src="../../location.svg" alt=""/>
             </button>
             {search && (
                 <div className="suggestions-container">

@@ -47,13 +47,8 @@ const Main = () => {
 
     // Fonction pour gérer le clic sur le bouton de recherche
     const handleSearchClick = () => {
-        if (isSearchClicked) {
-            setIsSearchClicked(false); // Si on clique à nouveau, on revient aux favoris
-            setIsFavorite(true); // Affiche le SVG 'favorite.svg' lorsque les favoris sont affichés
-        } else {
-            setIsSearchClicked(true); // Lorsque le bouton est cliqué la première fois, on affiche ClosestStop
-            setIsFavorite(false); // Affiche le SVG 'location.svg' lorsque ClosestStop est affiché
-        }
+        setIsSearchClicked(true); // Toggle de l'état isSearchClicked
+        setIsFavorite(false); // Masquer les favoris lors de la recherche
     };
 
     return (
@@ -63,20 +58,20 @@ const Main = () => {
                 {!selectedStop && !isSearchClicked && <h1 className="title">Arrêts favoris</h1>}
 
                 {selectedStop ? (
+                    // Affichage du stop sélectionné
                     <Stop stopName={selectedStop} onBack={() => setSelectedStop(null)} />
                 ) : (
-                    !isSearchClicked && <Favorite />
+                    // Affichage en fonction de l'état isSearchClicked
+                    !isSearchClicked ? (
+                        <Favorite setSelectedStop={setSelectedStop} />
+                    ) : (
+                        <div className="home-page">
+                            <h1 className="title">Arrêts les plus proches</h1>
+                            <ClosestStop stopNames={closestStops} onBack={() => setIsSearchClicked(false)} setSelectedStop={setSelectedStop}/>
+                        </div>
+                    )
                 )}
             </div>
-            <div>
-                {isSearchClicked && (
-                    <div className="home-page">
-                        <h1 className="title">Arrêts les plus proches</h1>
-                        <ClosestStop stopNames={closestStops} onBack={() => setIsSearchClicked(false)}/>
-                    </div>
-                )}
-            </div>
-            <AllLines/>
         </div>
     );
 };

@@ -444,3 +444,56 @@ input[type=text] {
   justify-content: center;
   margin-bottom: 10px;
 }
+
+.itemStop {
+  position: relative;
+  width: 55.875rem;
+  height: 7.375rem;
+  flex-shrink: 0;
+  margin-top: 3rem;
+  padding: 0.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 0.9375rem;
+  background: rgba(217, 217, 217, 0.16);
+  box-shadow: rgba(0, 0, 0, 0.24) 0 3px 8px;
+  cursor: pointer;
+}
+
+.itemStop .name {
+  display: flex;
+  width: 100%;
+  align-items: center;
+}
+
+.itemStop .name p {
+  position: absolute;
+  right: 5.63rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-weight: 500;
+  font-size: 1.5625rem;
+}
+
+.itemStop .name h2 {
+  font-weight: 600;
+  font-size: 2.0625rem;
+}
+
+.itemStop .name img {
+  position: absolute;
+  top: 50%;
+  right: 1.63rem;
+  transform: translateY(-50%);
+}
+
+.itemStop .lines {
+  display: flex;
+  width: 100%;
+  gap: 0.63rem;
+}
+
+.itemStop .lines .img {
+}
