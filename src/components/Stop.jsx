@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { fetchStopTimes, fetchStops,fetchDisruptions  } from '../services/api';
+import { fetchStopTimes, fetchStops, fetchDisruptions } from '../services/api';
 
 const Stop = ({ stopName, onBack }) => {
     const [stopCodes, setStopCodes] = useState([]);
@@ -85,8 +85,8 @@ const Stop = ({ stopName, onBack }) => {
                             }
 
                             if (temps) {
-                                const time = temps === 'proche' ? temps : parseInt(temps.match(/\d+/)?.[0], 10);
-                                if (!isNaN(time)) {
+                                const time = temps === 'proche' ? temps : (temps === "" ? "Inconnu" : parseInt(temps.match(/\d+/)?.[0], 10));
+                                if (time === 'proche' || time === 'Inconnu' || !isNaN(time)) {
                                     allLinesInfo[numLigne].terminusInfo[terminusName].push(time);
                                 }
                             }
@@ -103,8 +103,14 @@ const Stop = ({ stopName, onBack }) => {
 
                 for (const terminus in allLinesInfo[line].terminusInfo) {
                     const validTimes = allLinesInfo[line].terminusInfo[terminus]
-                        .filter(t => t === 'proche' || (!isNaN(t) && t !== ""))
-                        .sort((a, b) => a - b);
+                        .filter(t => t === 'proche' || t === 'Inconnu' || !isNaN(t))
+                        .sort((a, b) => {
+                            if (a === 'proche') return -1; // 'proche' en premier
+                            if (b === 'proche') return 1;
+                            if (a === 'Inconnu') return 1; // 'Inconnu' à la fin
+                            if (b === 'Inconnu') return -1;
+                            return a - b; // Tri numérique pour les autres cas
+                        });
 
                     if (validTimes.length > 0) {
                         formattedLinesInfo[line].terminusInfo[terminus] = validTimes[0];
@@ -191,7 +197,9 @@ const Stop = ({ stopName, onBack }) => {
                                     <p>
                                         {linesInfo[line].terminusInfo[terminus] === 'proche'
                                             ? 'Proche'
-                                            : `${linesInfo[line].terminusInfo[terminus]} min`
+                                            : linesInfo[line].terminusInfo[terminus] === 'Inconnu'
+                                                ? 'Inconnu'
+                                                : `${linesInfo[line].terminusInfo[terminus]} min`
                                         }
                                     </p>
                                     <img src="../../icon_rt.svg" alt="Refresh Icon" />
