@@ -8,8 +8,11 @@ const Stop = ({ stopName, onBack }) => {
     const [linesInfo, setLinesInfo] = useState({});
     const [error, setError] = useState(null);
     const [affectedLines, setAffectedLines] = useState([]); // Modif ici
+    const [favorite, setFavorite] = useState(false);
+
 
     useEffect(() => {
+
         const fetchStopCodes = async () => {
             try {
                 const stops = await fetchStops();
@@ -34,6 +37,25 @@ const Stop = ({ stopName, onBack }) => {
 
         fetchStopCodes();
     }, [stopName]);
+
+    useEffect(() => {
+        const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+        setFavorite(favorites.includes(stopName));
+    }, [stopName]);
+
+    const toggleFavorite = () => {
+        const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+        let updatedFavorites;
+
+        if (favorites.includes(stopName)) {
+            updatedFavorites = favorites.filter(fav => fav !== stopName);
+        } else {
+            updatedFavorites = [...favorites, stopName];
+        }
+
+        localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
+        setFavorite(!favorite);
+    };
 
     useEffect(() => {
         let intervalId;
@@ -138,7 +160,9 @@ const Stop = ({ stopName, onBack }) => {
                         )}
                     </div>
                 </div>
-                <div className="favorite"> <img src={`../../Star_light.svg`} /></div>
+                <div className="favorite" onClick={toggleFavorite}>
+                    <img src={favorite ? '../../Star_fill.svg' : '../../Star_light.svg'} alt="Favori" />
+                </div>
             </div>
             {Object.keys(linesInfo).map((line, index) => (
                 <div key={index} className="block-plus">
