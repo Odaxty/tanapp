@@ -144,6 +144,11 @@ a {
   border-radius: 0 2.1875rem 2.1875rem 0 ;
   background-color: transparent;
   cursor: pointer;
+  transition: 0.3s;
+}
+
+.searchBarButton:hover {
+  transform: scale(1.05);
 }
 
 .buttonBack {
@@ -221,6 +226,11 @@ input[type=text] {
   border-radius: 0.9375rem;
   background: rgba(217, 217, 217, 0.16);
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  transition: 0.3s;
+}
+
+.block:hover {
+  transform: scale(1.01);
 }
 
 .block-link {
@@ -523,6 +533,11 @@ input[type=text] {
   background: rgba(217, 217, 217, 0.16);
   box-shadow: rgba(0, 0, 0, 0.24) 0 3px 8px;
   cursor: pointer;
+  transition: 0.3s;
+}
+
+.itemStop:hover {
+  transform: scale(1.01);
 }
 
 .itemStop .name {
