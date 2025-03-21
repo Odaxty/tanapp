@@ -5,14 +5,16 @@ import Stop from '@/components/Stop';
 import Favorite from '@/components/Favorite';
 import { fetchClosestStops } from "@/services/api";
 import ClosestStop from "@/components/ClosestStop";
-import AllLines from "@/components/AllLines";
 
 const Main = () => {
     const [closestStops, setClosestStops] = useState([]); // Liste des arrêts les plus proches
     const [selectedStop, setSelectedStop] = useState(null);
     const [location, setLocation] = useState({ latitude: null, longitude: null });
-    const [isSearchClicked, setIsSearchClicked] = useState(false); // Etat pour savoir si le bouton a été cliqué
-    const [isFavorite, setIsFavorite] = useState(true); // Etat pour gérer l'icône du bouton (location ou favorite)
+
+    // Variables d'état distinctes pour chaque mode
+    const [isSearching, setIsSearching] = useState(false); // Mode recherche
+    const [isClosestStopClicked, setIsClosestStopClicked] = useState(false); // Mode arrêts proches
+    const [isFavoriteClicked, setIsFavoriteClicked] = useState(true); // Mode favoris
 
     const updateLocation = () => {
         if (navigator.geolocation) {
@@ -20,7 +22,6 @@ const Main = () => {
                 async (position) => {
                     const { latitude, longitude } = position.coords;
 
-                    // Vérification si les nouvelles coordonnées sont différentes
                     if (latitude !== location.latitude || longitude !== location.longitude) {
                         setLocation({ latitude, longitude }); // Mise à jour des coordonnées
 
@@ -43,35 +44,88 @@ const Main = () => {
         const interval = setInterval(updateLocation, 15000); // Mise à jour toutes les 15 secondes
 
         return () => clearInterval(interval); // Nettoyage de l'intervalle
-    }, [location.latitude, location.longitude]); // Ajout des propriétés latitude et longitude comme dépendances
+    }, [location.latitude, location.longitude]);
 
-    // Fonction pour gérer le clic sur le bouton de recherche
+    // Gère l'état de la recherche
     const handleSearchClick = () => {
-        setIsSearchClicked(true); // Toggle de l'état isSearchClicked
-        setIsFavorite(false); // Masquer les favoris lors de la recherche
+        setIsSearching(true);
+        setIsClosestStopClicked(false);
+        setIsFavoriteClicked(false);
     };
+
+    // Gère l'état des arrêts les plus proches
+    const handleClosestStopClick = () => {
+        setIsSearching(false);
+        setIsClosestStopClicked(true);
+        setIsFavoriteClicked(false);
+        console.log('closest Stops')
+    };
+
+    // Gère l'état des favoris
+    const handleFavoriteClick = () => {
+        setIsSearching(false);
+        setIsClosestStopClicked(false);
+        setIsFavoriteClicked(true);
+        console.log('favorite')
+    };
+
+    const handleSearchStop = (stopName) => {
+        setSelectedStop(stopName)
+        setIsClosestStopClicked(false);
+        setIsFavoriteClicked(false);
+    }
 
     return (
         <div>
-            <SearchBar setSelectedStop={setSelectedStop} onSearchClick={handleSearchClick} isFavorite={isFavorite} />
-            <div className="home-page">
-                {!selectedStop && !isSearchClicked && <h1 className="title">Arrêts favoris</h1>}
+            <SearchBar
+                handleSearchStop={handleSearchStop}
+                onSearchClick={handleSearchClick}
+                setIsFavoriteClicked={handleFavoriteClick}
+                onBack={() => {
+                    setSelectedStop(null);
+                    handleFavoriteClick()
+                }}
+                handleClosestStopClick={handleClosestStopClick}
+                handleFavoriteClick={handleFavoriteClick}
+            />
 
-                {selectedStop ? (
-                    // Affichage du stop sélectionné
-                    <Stop stopName={selectedStop} onBack={() => setSelectedStop(null)} />
-                ) : (
-                    // Affichage en fonction de l'état isSearchClicked
-                    !isSearchClicked ? (
-                        <Favorite setSelectedStop={setSelectedStop} />
-                    ) : (
-                        <div className="home-page">
-                            <h1 className="title">Arrêts les plus proches</h1>
-                            <ClosestStop stopNames={closestStops} onBack={() => setIsSearchClicked(false)} setSelectedStop={setSelectedStop}/>
-                        </div>
-                    )
-                )}
-            </div>
+            {/* Si isFavoriteClicked est true, on affiche Favorite */}
+            {isFavoriteClicked && (
+                <div className="home-page">
+                    <Favorite setSelectedStop={setSelectedStop} />
+                </div>
+            )}
+
+            {/* Si isClosestStopClicked est true, on affiche ClosestStop */}
+            {isClosestStopClicked && (
+                <div className="home-page">
+                    <h1 className="title">Arrêts les plus proches</h1>
+                    <ClosestStop
+                        stopNames={closestStops}
+                        onBack={() => setIsClosestStopClicked(false)}
+                        setSelectedStop={setSelectedStop}
+                    />
+                </div>
+            )}
+
+            {/* Si isSearching est true et qu'il n'y a pas de stop sélectionné, on affiche SearchBar */}
+            {isSearching && !selectedStop && (
+                <div className="home-page">
+                    <h1 className="title">Rechercher un arrêt</h1>
+                    <SearchBar
+                        setSelectedStop={setSelectedStop}
+                        onSearchClick={handleSearchClick}
+                        setIsFavoriteClicked={handleFavoriteClick}
+                        handleClosestStopClick={handleClosestStopClick}
+                        onBack={() => setSelectedStop(null)}
+                    />
+                </div>
+            )}
+
+            {/* Si un stop est sélectionné, on affiche Stop */}
+            {selectedStop && !isSearching && !isClosestStopClicked && !isFavoriteClicked && (
+                <Stop stopName={selectedStop} onBack={() => setSelectedStop(null)} />
+            )}
         </div>
     );
 };

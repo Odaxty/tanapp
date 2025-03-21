@@ -90,16 +90,24 @@ a {
   }
 }
 
-.searchBar {
+.fullContentNavBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 4.375rem;
   width: 55.875rem;
+  margin-top: 1rem;
+}
+
+.searchBar {
+  width: 45.875rem;
   height: 4.375rem;
   flex-shrink: 0;
-  margin-top: 1rem;
   color: black;
   border: none;
   border-radius: 2.1875rem;
   background: rgba(217, 217, 217, 0.15);
-  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  box-shadow: rgba(0, 0, 0, 0.24) 0 3px 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -136,6 +144,37 @@ a {
   border-radius: 0 2.1875rem 2.1875rem 0 ;
   background-color: transparent;
   cursor: pointer;
+}
+
+.buttonBack {
+  background-color: transparent;
+  border: none;
+  transform: rotate(180deg);
+  cursor: pointer;
+}
+
+.buttonBack img {
+  transition: 0.3s;
+}
+
+.buttonFavorite {
+  background-color: transparent;
+  border: none;
+  height: 100%;
+  cursor: pointer;
+}
+
+.buttonBack:hover img {
+  transform: translateX(5px);
+}
+
+.buttonFavorite img {
+  height: 100%;
+  transition: 0.3s;
+}
+
+.buttonFavorite img:hover {
+  transform: rotate(10deg);
 }
 
 .searchBarLine {
@@ -408,7 +447,7 @@ input[type=text] {
   line-height: normal;
 }
 
-.alerte {  /*Modif ici*/
+.alerte {
   position: absolute;
   top: 0;
   right: 0;
@@ -423,11 +462,12 @@ input[type=text] {
   font-family: "Chillax Variable";
   font-size: 36px;
   font-style: normal;
-  font-weight: 700;
+  font-weight: 400;
   line-height: normal;
   border-radius: 0px 15px;
   border-radius: 0px 15px;
   background: #FFD000;
+  cursor: pointer;
 }
 
 .presentation {

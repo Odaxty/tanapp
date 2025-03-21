@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { fetchStops } from '../services/api';
 
-const SearchBar = ({ setSelectedStop, onSearchClick, isFavorite }) => {
+const SearchBar = ({ handleSearchStop, setIsFavoriteClicked, onBack, handleClosestStopClick, handleFavoriteClick }) => {
     const [search, setSearch] = useState('');
     const [suggestions, setSuggestions] = useState([]);
     const [allStops, setAllStops] = useState([]);
@@ -39,39 +39,47 @@ const SearchBar = ({ setSelectedStop, onSearchClick, isFavorite }) => {
     };
 
     const clickOnStop = (nameStop) => {
-        setSelectedStop(nameStop);
-        setSearch("");
-    };
-
-    const handleButtonClick = () => {
-        onSearchClick(); // Appel de la fonction passée en prop pour changer l'état dans Main
+        setIsFavoriteClicked(false);  // Désactivation des favoris
+        handleSearchStop(nameStop);  // Sélectionner l'arrêt
+        setSearch("");  // Réinitialise la recherche
     };
 
     return (
-        <div className="searchBar">
-            <input
-                className="searchBarInput"
-                type="text"
-                value={search}
-                onChange={handleInputChange}
-                placeholder="Rechercher un arrêt..."
-            />
-            <div className="searchBarLine"></div>
-            <button className="searchBarButton" onClick={handleButtonClick}>
-                <img src="../../location.svg" alt=""/>
+        <div className="fullContentNavBar">
+            <button className="buttonBack">
+                <img src="../../arrow-right.svg" onClick={onBack} alt=""/>
             </button>
-            {search && (
-                <div className="suggestions-container">
-                    {suggestions.map((suggestion, index) => (
-                        <div key={index} className="suggestion-item">
-                            <p className="suggestion-item-text" onClick={ () =>
-                                clickOnStop(event.target.textContent)
-                            }>
-                                {suggestion.libelle}</p>
-                        </div>
-                    ))}
-                </div>
-            )}
+            <div className="searchBar">
+                <input
+                    className="searchBarInput"
+                    type="text"
+                    value={search}
+                    onChange={handleInputChange}
+                    placeholder="Rechercher un arrêt..."
+                />
+                <div className="searchBarLine"></div>
+                <button className="searchBarButton" onClick={handleClosestStopClick}>
+                    <img src="../../location.svg" alt=""/>
+                </button>
+                {search && (
+                    <div className="suggestions-container">
+                        {suggestions.map((suggestion, index) => (
+                            <div key={index} className="suggestion-item">
+                                <p
+                                    className="suggestion-item-text"
+                                    onClick={() => clickOnStop(suggestion.libelle)}  // Passer l'arrêt sélectionné
+                                >
+                                    {suggestion.libelle}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            <button className="buttonFavorite" onClick={() => handleFavoriteClick()}>
+                <img src="../../Star_fill.svg" alt=""/>
+            </button>
         </div>
     );
 };
