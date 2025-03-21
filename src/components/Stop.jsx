@@ -7,11 +7,12 @@ const Stop = ({ stopName, onBack }) => {
     const [stopCodes, setStopCodes] = useState([]);
     const [linesInfo, setLinesInfo] = useState({});
     const [error, setError] = useState(null);
-    const [affectedLines, setAffectedLines] = useState([]); // Modif ici
+    const [affectedLines, setAffectedLines] = useState([]);
     const [favorite, setFavorite] = useState(false);
-
     const [selectedDisruption, setSelectedDisruption] = useState(null);
+    const [disruptionDetails, setDisruptionDetails] = useState(null);
 
+    console.log(affectedLines);
 
     useEffect(() => {
         const fetchStopCodes = async () => {
@@ -126,9 +127,19 @@ const Stop = ({ stopName, onBack }) => {
             setLinesInfo(formattedLinesInfo);
         };
 
-        const fetchDisruptionsData = async () => { // Modif ici
-            const disruptions = await fetchDisruptions();
-            setAffectedLines(disruptions);
+        const fetchDisruptionsData = async () => {
+            try {
+                const disruptions = await fetchDisruptions();
+                const affected = [];
+
+                disruptions.forEach(disruption => {
+                    affected.push(disruption.lineNumber);  // Récupère les numéros de ligne affectés
+                });
+
+                setAffectedLines(affected);
+            } catch (error) {
+                console.error('Erreur lors de la récupération des perturbations:', error);
+            }
         };
 
         if (stopCodes.length > 0) {
@@ -141,6 +152,12 @@ const Stop = ({ stopName, onBack }) => {
             if (intervalId) clearInterval(intervalId);
         };
     }, [stopCodes]);
+
+    const handleDisruptionClick = (line) => {
+        const disruption = affectedLines.find(disruption => disruption.lineNumber === line);
+        setDisruptionDetails(disruption ? disruption.details : null);
+        setSelectedDisruption(line);
+    };
 
     return (
         <div className="stop">
@@ -208,27 +225,26 @@ const Stop = ({ stopName, onBack }) => {
                         )).slice(0, 2)}
                     </div>
                     {affectedLines.includes(line) && (
-                        <div className="alerte" onClick={() => {
-                            console.log("Alerte cliquée pour la ligne:", line);
-                            setSelectedDisruption(line);
-                        }}>
+                        <div className="alerte" onClick={() => handleDisruptionClick(line)}>
                             !
                         </div>
-
                     )}
                 </div>
             ))}
             <button className="button-back" onClick={onBack}>Retour</button>
 
-            {selectedDisruption && (
+            {selectedDisruption && disruptionDetails && (
                 <div className="modal-overlay" onClick={() => setSelectedDisruption(null)}>
                     <div className="modal" onClick={e => e.stopPropagation()}>
                         <h3>Perturbation sur la ligne {selectedDisruption}</h3>
+                        <p>{disruptionDetails.intitule}</p>
+                        <p>{disruptionDetails.resume}</p>
+                        <p><strong>Début:</strong> {disruptionDetails.heure_debut}</p>
+                        <p><strong>Fin:</strong> {disruptionDetails.heure_fin}</p>
                         <button onClick={() => setSelectedDisruption(null)}>Fermer</button>
                     </div>
                 </div>
             )}
-
         </div>
     );
 };

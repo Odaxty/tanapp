@@ -33,16 +33,25 @@ export const fetchDisruptions = async () => {
 
         const records = response.data.results || [];
 
-        const affectedLines = new Set();
+        // Un objet pour stocker les informations supplémentaires des lignes affectées
+        const affectedLinesDetails = {};
 
         records.forEach(record => {
             try {
                 const tronconsArray = record.troncons.split(';');
 
                 tronconsArray.forEach(troncon => {
-                    const lineNumber = troncon.split('/')[0].replace('[', '');
+                    const lineNumber = troncon.split('/')[0].replace('[', '').trim();
                     if (lineNumber) {
-                        affectedLines.add(lineNumber);
+                        // Si la ligne n'est pas déjà enregistrée, on l'ajoute avec les détails associés
+                        if (!affectedLinesDetails[lineNumber]) {
+                            affectedLinesDetails[lineNumber] = {
+                                intitule: record.intitule,
+                                resume: record.resume,
+                                heure_debut: record.heure_debut,
+                                heure_fin: record.heure_fin
+                            };
+                        }
                     }
                 });
             } catch (error) {
@@ -50,13 +59,20 @@ export const fetchDisruptions = async () => {
             }
         });
 
-        console.log('Lignes concernées par une info trafic:', Array.from(affectedLines));
-        return Array.from(affectedLines);
+        // Créer un tableau avec les lignes et leurs détails
+        const affectedLinesArray = Object.keys(affectedLinesDetails).map(lineNumber => ({
+            lineNumber,
+            details: affectedLinesDetails[lineNumber]
+        }));
+
+        console.log('Lignes concernées par une info trafic:', affectedLinesArray);
+        return affectedLinesArray;
     } catch (error) {
         console.error('Erreur lors de la récupération des perturbations:', error);
         return [];
     }
 };
+
 
 
 export const fetchClosestStops = async (lat, long) => {
