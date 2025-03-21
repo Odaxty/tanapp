@@ -1,13 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { fetchStopTimes, fetchStops,fetchDisruptions  } from '../services/api';
+import { fetchStopTimes, fetchStops, fetchDisruptions } from '../services/api';
 
 const Stop = ({ stopName, onBack }) => {
     const [stopCodes, setStopCodes] = useState([]);
     const [linesInfo, setLinesInfo] = useState({});
     const [error, setError] = useState(null);
     const [affectedLines, setAffectedLines] = useState([]); // Modif ici
+    const [favorite, setFavorite] = useState(false);
+
+    const [selectedDisruption, setSelectedDisruption] = useState(null);
+
 
     useEffect(() => {
         const fetchStopCodes = async () => {
@@ -36,6 +40,25 @@ const Stop = ({ stopName, onBack }) => {
     }, [stopName]);
 
     useEffect(() => {
+        const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+        setFavorite(favorites.includes(stopName));
+    }, [stopName]);
+
+    const toggleFavorite = () => {
+        const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+        let updatedFavorites;
+
+        if (favorites.includes(stopName)) {
+            updatedFavorites = favorites.filter(fav => fav !== stopName);
+        } else {
+            updatedFavorites = [...favorites, stopName];
+        }
+
+        localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
+        setFavorite(!favorite);
+    };
+
+    useEffect(() => {
         let intervalId;
 
         const fetchAllLinesInfo = async () => {
@@ -62,8 +85,8 @@ const Stop = ({ stopName, onBack }) => {
                             }
 
                             if (temps) {
-                                const time = temps === 'proche' ? temps : parseInt(temps.match(/\d+/)?.[0], 10);
-                                if (!isNaN(time)) {
+                                const time = temps === 'proche' ? temps : (temps === "" ? "Inconnu" : parseInt(temps.match(/\d+/)?.[0], 10));
+                                if (time === 'proche' || time === 'Inconnu' || !isNaN(time)) {
                                     allLinesInfo[numLigne].terminusInfo[terminusName].push(time);
                                 }
                             }
@@ -80,8 +103,14 @@ const Stop = ({ stopName, onBack }) => {
 
                 for (const terminus in allLinesInfo[line].terminusInfo) {
                     const validTimes = allLinesInfo[line].terminusInfo[terminus]
-                        .filter(t => t === 'proche' || (!isNaN(t) && t !== ""))
-                        .sort((a, b) => a - b);
+                        .filter(t => t === 'proche' || t === 'Inconnu' || !isNaN(t))
+                        .sort((a, b) => {
+                            if (a === 'proche') return -1; // 'proche' en premier
+                            if (b === 'proche') return 1;
+                            if (a === 'Inconnu') return 1; // 'Inconnu' à la fin
+                            if (b === 'Inconnu') return -1;
+                            return a - b; // Tri numérique pour les autres cas
+                        });
 
                     if (validTimes.length > 0) {
                         formattedLinesInfo[line].terminusInfo[terminus] = validTimes[0];
@@ -115,6 +144,7 @@ const Stop = ({ stopName, onBack }) => {
 
     return (
         <div className="stop">
+            <div className="presentation">
                 <div className="infos">
                     <div className="name">
                         <h2>{stopName}</h2>
@@ -136,6 +166,10 @@ const Stop = ({ stopName, onBack }) => {
                             )
                         )}
                     </div>
+                </div>
+                <div className="favorite" onClick={toggleFavorite}>
+                    <img src={favorite ? '../../Star_fill.svg' : '../../Star_light.svg'} alt="Favori" />
+                </div>
             </div>
             {Object.keys(linesInfo).map((line, index) => (
                 <div key={index} className="block-plus">
@@ -163,7 +197,9 @@ const Stop = ({ stopName, onBack }) => {
                                     <p>
                                         {linesInfo[line].terminusInfo[terminus] === 'proche'
                                             ? 'Proche'
-                                            : `${linesInfo[line].terminusInfo[terminus]} min`
+                                            : linesInfo[line].terminusInfo[terminus] === 'Inconnu'
+                                                ? 'Inconnu'
+                                                : `${linesInfo[line].terminusInfo[terminus]} min`
                                         }
                                     </p>
                                     <img src="../../icon_rt.svg" alt="Refresh Icon" />
@@ -172,11 +208,27 @@ const Stop = ({ stopName, onBack }) => {
                         )).slice(0, 2)}
                     </div>
                     {affectedLines.includes(line) && (
-                        <div className="alerte">!</div> // Modif ici
+                        <div className="alerte" onClick={() => {
+                            console.log("Alerte cliquée pour la ligne:", line);
+                            setSelectedDisruption(line);
+                        }}>
+                            !
+                        </div>
+
                     )}
                 </div>
             ))}
             <button className="button-back" onClick={onBack}>Retour</button>
+
+            {selectedDisruption && (
+                <div className="modal-overlay" onClick={() => setSelectedDisruption(null)}>
+                    <div className="modal" onClick={e => e.stopPropagation()}>
+                        <h3>Perturbation sur la ligne {selectedDisruption}</h3>
+                        <button onClick={() => setSelectedDisruption(null)}>Fermer</button>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 };
