@@ -46,6 +46,8 @@ export const fetchDisruptions = async () => {
                             affectedLinesDetails[lineNumber] = {
                                 intitule: record.intitule,
                                 resume: record.resume,
+                                date_debut: record.date_debut,  // Ajout de la date de début
+                                date_fin: record.date_fin,  // Ajout de la date de fin
                                 heure_debut: record.heure_debut,
                                 heure_fin: record.heure_fin
                             };

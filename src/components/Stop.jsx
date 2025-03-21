@@ -14,6 +14,16 @@ const Stop = ({ stopName, onBack }) => {
 
     console.log(affectedLines);
 
+    const [disruptions, setDisruptions] = useState([]);
+
+    useEffect(() => {
+        const loadDisruptions = async () => {
+            const data = await fetchDisruptions();
+            setDisruptions(data);
+        };
+        loadDisruptions();
+    }, []);
+
     useEffect(() => {
         const fetchStopCodes = async () => {
             try {
@@ -153,11 +163,6 @@ const Stop = ({ stopName, onBack }) => {
         };
     }, [stopCodes]);
 
-    const handleDisruptionClick = (line) => {
-        const disruption = affectedLines.find(disruption => disruption.lineNumber === line);
-        setDisruptionDetails(disruption ? disruption.details : null);
-        setSelectedDisruption(line);
-    };
 
     return (
         <div className="stop">
@@ -227,12 +232,14 @@ const Stop = ({ stopName, onBack }) => {
                     {affectedLines.includes(line) && (
                         <div className="alerte" onClick={() => {
                             console.log("Alerte cliquée pour la ligne:", line);
-                            setSelectedDisruption(line);
+                            const disruptionDetails = disruptions.find(d => d.lineNumber === line)?.details || {};
+                            setSelectedDisruption({ line, ...disruptionDetails });
                         }}>
                             !
                         </div>
-
                     )}
+
+
                 </div>
             ))}
             <button className="button-back" onClick={onBack}>Retour</button>
@@ -240,11 +247,16 @@ const Stop = ({ stopName, onBack }) => {
             {selectedDisruption && (
                 <div className="modal-overlay" onClick={() => setSelectedDisruption(null)}>
                     <div className="modal" onClick={e => e.stopPropagation()}>
-                        <h3>Perturbation sur la ligne {selectedDisruption}</h3>
+                        <h3>Perturbation sur la ligne {selectedDisruption.line}</h3>
+                        <p><strong>Intitulé :</strong> {selectedDisruption.intitule || "Non disponible"}</p>
+                        <p><strong>Résumé :</strong> {selectedDisruption.resume || "Non disponible"}</p>
+                        <p><strong>Début :</strong> {selectedDisruption.date_debut} à {selectedDisruption.heure_debut}</p>
+                        <p><strong>Fin :</strong> {selectedDisruption.date_fin} à {selectedDisruption.heure_fin}</p>
                         <button onClick={() => setSelectedDisruption(null)}>Fermer</button>
                     </div>
                 </div>
             )}
+
 
         </div>
     );
