@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { fetchStops } from '../services/api';
 
-const ClosestStop = ({ stopNames, onBack, setSelectedStop }) => {
+const ClosestStop = ({ stopNames, onBack, clickOnStop }) => {
     const [stopData, setStopData] = useState([]);
     const [error, setError] = useState(null);
 
@@ -56,7 +56,7 @@ const ClosestStop = ({ stopNames, onBack, setSelectedStop }) => {
             ) : (
                 stopData.map((stop, index) => (
                     <div key={index} className="closeststops">
-                        <div className="itemStop" onClick={() => setSelectedStop(stop.name)}>
+                        <div className="itemStop" onClick={() => clickOnStop(stop.name)}>
                             <div className="name">
                                 <h2>{stop.name}</h2>
                                 <p>{stop.distance}</p>

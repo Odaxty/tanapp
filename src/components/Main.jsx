@@ -73,7 +73,12 @@ const Main = () => {
         setSelectedStop(stopName)
         setIsClosestStopClicked(false);
         setIsFavoriteClicked(false);
-    }
+    };
+
+    const clickOnStop = (nameStop) => {
+        setIsFavoriteClicked(false);  // Désactivation des favoris
+        handleSearchStop(nameStop);  // Sélectionner l'arrêt
+    };
 
     return (
         <div>
@@ -92,7 +97,10 @@ const Main = () => {
             {/* Si isFavoriteClicked est true, on affiche Favorite */}
             {isFavoriteClicked && (
                 <div className="home-page">
-                    <Favorite setSelectedStop={setSelectedStop} />
+                    <Favorite
+                        setSelectedStop={setSelectedStop}
+                        clickOnStop={clickOnStop}
+                    />
                 </div>
             )}
 
@@ -103,7 +111,7 @@ const Main = () => {
                     <ClosestStop
                         stopNames={closestStops}
                         onBack={() => setIsClosestStopClicked(false)}
-                        setSelectedStop={setSelectedStop}
+                        clickOnStop={clickOnStop}
                     />
                 </div>
             )}

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { fetchStops, fetchStopTimes } from '../services/api';
 
-const Favorite = ({ setSelectedStop }) => {
+const Favorite = ({ clickOnStop }) => {
     const [favorites, setFavorites] = useState([]);
     const [favoriteInfos, setFavoriteInfos] = useState({});
 
@@ -66,7 +66,7 @@ const Favorite = ({ setSelectedStop }) => {
                     const temps = firstLine.temps || '';
 
                     return (
-                        <div className="block-link" key={index} onClick={() => setSelectedStop(favStop)}>
+                        <div className="block-link" key={index} onClick={() => clickOnStop(favStop)}>
                             <div className="block">
                                 <div className="picinfos">
                                     <div className="pic">
