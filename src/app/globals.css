@@ -429,3 +429,18 @@ input[type=text] {
   border-radius: 0px 15px;
   background: #FFD000;
 }
+
+.ligne-scolaire {
+  height: 30px;
+  width: 45px;
+  background-color: #fff;
+  color: #ff0000;
+  border-radius: 5px;
+  font-size: 0.5em;
+  font-family: "Chillax Variable";
+  font-weight: 550;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
