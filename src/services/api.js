@@ -33,7 +33,6 @@ export const fetchDisruptions = async () => {
 
         const records = response.data.results || [];
 
-        // Un objet pour stocker les informations supplémentaires des lignes affectées
         const affectedLinesDetails = {};
 
         records.forEach(record => {
@@ -43,7 +42,6 @@ export const fetchDisruptions = async () => {
                 tronconsArray.forEach(troncon => {
                     const lineNumber = troncon.split('/')[0].replace('[', '').trim();
                     if (lineNumber) {
-                        // Si la ligne n'est pas déjà enregistrée, on l'ajoute avec les détails associés
                         if (!affectedLinesDetails[lineNumber]) {
                             affectedLinesDetails[lineNumber] = {
                                 intitule: record.intitule,
@@ -59,7 +57,6 @@ export const fetchDisruptions = async () => {
             }
         });
 
-        // Créer un tableau avec les lignes et leurs détails
         const affectedLinesArray = Object.keys(affectedLinesDetails).map(lineNumber => ({
             lineNumber,
             details: affectedLinesDetails[lineNumber]
