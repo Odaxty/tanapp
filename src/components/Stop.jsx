@@ -8,6 +8,8 @@ const Stop = ({ stopName, onBack }) => {
     const [linesInfo, setLinesInfo] = useState({});
     const [error, setError] = useState(null);
     const [affectedLines, setAffectedLines] = useState([]); // Modif ici
+    const [selectedDisruption, setSelectedDisruption] = useState(null);
+
 
     useEffect(() => {
         const fetchStopCodes = async () => {
@@ -175,11 +177,27 @@ const Stop = ({ stopName, onBack }) => {
                         )).slice(0, 2)}
                     </div>
                     {affectedLines.includes(line) && (
-                        <div className="alerte">!</div>
+                        <div className="alerte" onClick={() => {
+                            console.log("Alerte cliquée pour la ligne:", line);
+                            setSelectedDisruption(line);
+                        }}>
+                            !
+                        </div>
+
                     )}
                 </div>
             ))}
             <button className="button-back" onClick={onBack}>Retour</button>
+
+            {selectedDisruption && (
+                <div className="modal-overlay" onClick={() => setSelectedDisruption(null)}>
+                    <div className="modal" onClick={e => e.stopPropagation()}>
+                        <h3>Perturbation sur la ligne {selectedDisruption}</h3>
+                        <button onClick={() => setSelectedDisruption(null)}>Fermer</button>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 };
