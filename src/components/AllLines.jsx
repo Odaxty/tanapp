@@ -43,6 +43,30 @@ const AllLines = () => {
         fetchLines();
     }, []);
 
+    const ligneScolaire = ["101", "102", "104", "105", "107", "108", "109", "111", "112", "115", "116", "117", "118", "119", "122", "126", "127", "128", "129", "131", "135", "137", "138", "139", "141", "142", "147", "148", "149", "152", "157", "158", "159", "162", "168", "169", "172", "179", "187", "189", "192"];
+
+    const LineItem = ({ numLigne }) => {
+        const [imageExists, setImageExists] = useState(true);
+        const imageUrl = `../../pics/Picto ligne ${numLigne}.svg`;
+
+        useEffect(() => {
+            const img = new Image();
+            img.src = imageUrl;
+            img.onload = () => setImageExists(true);
+            img.onerror = () => setImageExists(false);
+        }, [imageUrl]);
+
+        return (
+            <div className={`line-item ${ligneScolaire.includes(numLigne) ? 'ligne-scolaire' : ''}`}>
+                {imageExists ? (
+                    <img src={imageUrl} alt={`Ligne ${numLigne}`} />
+                ) : (
+                    <span className="ligne-text">{numLigne}</span>
+                )}
+            </div>
+        );
+    };
+
     return (
         <div className="all-lines">
             <h2>Toutes les lignes</h2>
@@ -51,14 +75,13 @@ const AllLines = () => {
             ) : (
                 <div className="lines-grid">
                     {lines.map((numLigne, index) => (
-                        <div key={index} className="line-item">
-                            <img src={`../../pics/Picto ligne ${numLigne}.svg`} alt={`Ligne ${numLigne}`} />
-                        </div>
+                        <LineItem key={index} numLigne={numLigne} />
                     ))}
                 </div>
             )}
         </div>
     );
+
 };
 
 export default AllLines;
