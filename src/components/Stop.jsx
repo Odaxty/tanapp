@@ -225,26 +225,27 @@ const Stop = ({ stopName, onBack }) => {
                         )).slice(0, 2)}
                     </div>
                     {affectedLines.includes(line) && (
-                        <div className="alerte" onClick={() => handleDisruptionClick(line)}>
+                        <div className="alerte" onClick={() => {
+                            console.log("Alerte cliquée pour la ligne:", line);
+                            setSelectedDisruption(line);
+                        }}>
                             !
                         </div>
+
                     )}
                 </div>
             ))}
             <button className="button-back" onClick={onBack}>Retour</button>
 
-            {selectedDisruption && disruptionDetails && (
+            {selectedDisruption && (
                 <div className="modal-overlay" onClick={() => setSelectedDisruption(null)}>
                     <div className="modal" onClick={e => e.stopPropagation()}>
                         <h3>Perturbation sur la ligne {selectedDisruption}</h3>
-                        <p>{disruptionDetails.intitule}</p>
-                        <p>{disruptionDetails.resume}</p>
-                        <p><strong>Début:</strong> {disruptionDetails.heure_debut}</p>
-                        <p><strong>Fin:</strong> {disruptionDetails.heure_fin}</p>
                         <button onClick={() => setSelectedDisruption(null)}>Fermer</button>
                     </div>
                 </div>
             )}
+
         </div>
     );
 };
