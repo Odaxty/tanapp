@@ -1,15 +1,7 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --hover: rgba(255, 255, 255, 0.10);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    --hover: rgba(0, 0, 0, 0.10);
-  }
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --hover: rgba(0, 0, 0, 0.10);
 }
 
 @font-face {
@@ -30,7 +22,7 @@
   font-family: "Chillax Variable";
   font-style: normal;
   font-weight: 650;
-  src: url("../../public/fonts/Chillax-ExtraLight.otf") format("opentype");
+  src: url("../../public/fonts/Chillax-Extralight.otf") format("opentype");
 }
 
 @font-face {
@@ -596,4 +588,13 @@ input[type=text] {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   max-width: 400px;
   text-align: center;
+}
+
+
+@media screen and (max-width: 1000px) {
+  body {
+    transform: scale(0.4);
+    transform-origin: top center;
+    width: 200%;
+  }
 }
