@@ -429,3 +429,26 @@ input[type=text] {
   border-radius: 0px 15px;
   background: #FFD000;
 }
+
+.presentation {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.presentation .favorite {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+
+}
+
+.presentation .favorite img {
+  width: 3.5rem;
+  height: auto;
+
+}
