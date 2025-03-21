@@ -115,6 +115,7 @@ const Stop = ({ stopName, onBack }) => {
 
     return (
         <div className="stop">
+            <div className="presentation">
                 <div className="infos">
                     <div className="name">
                         <h2>{stopName}</h2>
@@ -136,6 +137,8 @@ const Stop = ({ stopName, onBack }) => {
                             )
                         )}
                     </div>
+                </div>
+                <div className="favorite"> <img src={`../../Star_light.svg`} /></div>
             </div>
             {Object.keys(linesInfo).map((line, index) => (
                 <div key={index} className="block-plus">
@@ -172,7 +175,7 @@ const Stop = ({ stopName, onBack }) => {
                         )).slice(0, 2)}
                     </div>
                     {affectedLines.includes(line) && (
-                        <div className="alerte">!</div> // Modif ici
+                        <div className="alerte">!</div>
                     )}
                 </div>
             ))}
