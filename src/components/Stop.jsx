@@ -56,29 +56,37 @@ const Stop = ({ stopName, onBack }) => {
     setFavoriteLines(savedFavorites[stopName] || {}); // permet d'afficher els lignes déja mis en favorits
         }, [stopName]);
 
-    const toggleFavorite = (line) => {
-        const savedFavorites = JSON.parse(localStorage.getItem('favorites')) || {};
-    
-        // Récupérer les favoris de l'arrêt actuel
-        const stopFavorites = savedFavorites[stopName] || {};
+        const toggleFavorite = (line) => {
+            const savedFavorites = JSON.parse(localStorage.getItem('favorites')) || {};
         
-        // Basculer l'état de la ligne (ajouter/supprimer)
-        const updatedFavorites = { ...stopFavorites };
-        if (updatedFavorites[line]) {
-            delete updatedFavorites[line]; // Supprimer si déjà favori
-            if (Object.keys(updatedFavorites).length === 0) {
-                delete savedFavorites[stopName]; // Supprimer l'arrêt si vide
+            // Récupérer les favoris de l'arrêt actuel
+            const stopFavorites = savedFavorites[stopName] || {};
+        
+            // Basculer l'état de la ligne (ajouter/supprimer)
+            if (stopFavorites[line]) {
+                delete stopFavorites[line]; // Supprimer la ligne si déjà favori
+            } else {
+                stopFavorites[line] = true; // Ajouter comme favori
             }
-        } else {
-            updatedFavorites[line] = true; // Ajouter comme favori
-        }
-        // Mise à jour des favoris dans localStorage
-        const newFavorites = { ...savedFavorites, [stopName]: updatedFavorites };
-        localStorage.setItem('favorites', JSON.stringify(newFavorites));
-    
-        // Mettre à jour l'état React
-        setFavoriteLines(updatedFavorites);
-    };
+        
+            // Si plus aucune ligne dans l'arrêt, on supprime l'arrêt complètement
+            if (Object.keys(stopFavorites).length === 0) {
+                delete savedFavorites[stopName];
+            } else {
+                savedFavorites[stopName] = stopFavorites; // Sinon, on garde l'arrêt mis à jour
+            }
+        
+            // Mise à jour du localStorage
+            localStorage.setItem('favorites', JSON.stringify(savedFavorites));
+        
+            // Mise à jour de l'état React
+            setFavoriteLines(savedFavorites[stopName] || {}); // Pour rafraîchir les lignes affichées
+            setFavorites(Object.entries(savedFavorites).map(([stopName, lines]) => ({
+                stopName,
+                lines: Object.keys(lines),
+            }))); // Mettre à jour la liste des arrêts
+        };
+        
 
     useEffect(() => {
         let intervalId;

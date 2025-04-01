@@ -148,19 +148,17 @@ const Favorite = ({ clickOnStop }) => {
                                             {terminusInfo.slice(0, 2).map((info, tIdx) => (
                                                 <div key={tIdx} className="times-child">
                                                     <p>
-                                                        {/* Comparaison des valeurs en normalisant la casse et en supprimant les espaces */}
                                                         {info.temps?.toLowerCase().trim() === 'proche'
                                                             ? 'Proche'
-                                                            : info.temps?.toLowerCase().trim() === 'inconnu'
+                                                            : !info.temps || info.temps.trim() === '' // Vérifie si `temps` est vide ou undefined
                                                             ? 'Inconnu'
-                                                            : `${info.temps} `
-                                                        }
+                                                            : `${info.temps} `}
                                                     </p>
                                                     <img src="../../icon_rt.svg" alt="Refresh Icon" />
                                                 </div>
                                             ))}
-
                                         </div>
+
 
                                         {/* Icône d'étoile activée pour les favoris */}
                                             <div className="favorite" onClick={(e) => {
