@@ -263,12 +263,21 @@ const Stop = ({ stopName, onBack }) => {
             {selectedDisruption && (
                 <div className="modal-overlay" onClick={() => setSelectedDisruption(null)}>
                     <div className="modal" onClick={e => e.stopPropagation()}>
-                        <h3>Perturbation sur la ligne {selectedDisruption.line}</h3>
-                        <p><strong>Début :</strong> {selectedDisruption.date_debut} à {selectedDisruption.heure_debut}</p>
-                        <p><strong>Fin :</strong> {selectedDisruption.date_fin} à {selectedDisruption.heure_fin}</p>
-                        <p><strong>Intitulé :</strong> {selectedDisruption.intitule || "Non disponible"}</p>
-                        <p><strong>Résumé :</strong> {selectedDisruption.resume || "Non disponible"}</p>
-                        <button onClick={() => setSelectedDisruption(null)}>Fermer</button>
+                        <h3>Perturbation sur la ligne <img
+                            src={"../../pics/Picto ligne " + selectedDisruption.line + ".svg"} alt=""/></h3>
+                        <div className="date">
+                            <p><strong>Début
+                                :</strong> {selectedDisruption.date_debut} à {selectedDisruption.heure_debut}</p>
+                            <p><strong>Fin :</strong> {selectedDisruption.date_fin} à {selectedDisruption.heure_fin}</p>
+                        </div>
+                        <p className="title"><strong>Intitulé
+                            :</strong> {selectedDisruption.intitule || "Non disponible"}</p>
+                        <div className="resume">
+                            <p><strong>Résumé :</strong> {selectedDisruption.resume || "Non disponible"}</p>
+                        </div>
+                        <button onClick={() => setSelectedDisruption(null)}>
+                            <img src="../../arrow-right.svg" alt=""/>
+                        </button>
                     </div>
                 </div>
             )}
