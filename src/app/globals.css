@@ -586,14 +586,19 @@ input[type=text] {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  max-width: 600px;
+  max-width: 70%;
+  height: 80%;
   text-align: center;
+  overflow-y: scroll;
 }
 
-.resume p {
+
+.modal p {
+  color: red;
   margin: 5px 0;
   padding-left: 10px;
   border-left: 3px solid #ff9800;
+
 }
 
 

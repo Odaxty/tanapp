@@ -248,10 +248,10 @@ const Stop = ({ stopName, onBack }) => {
                 <div className="modal-overlay" onClick={() => setSelectedDisruption(null)}>
                     <div className="modal" onClick={e => e.stopPropagation()}>
                         <h3>Perturbation sur la ligne {selectedDisruption.line}</h3>
-                        <p><strong>Intitulé :</strong> {selectedDisruption.intitule || "Non disponible"}</p>
-                        <p><strong>Résumé :</strong> {selectedDisruption.resume || "Non disponible"}</p>
                         <p><strong>Début :</strong> {selectedDisruption.date_debut} à {selectedDisruption.heure_debut}</p>
                         <p><strong>Fin :</strong> {selectedDisruption.date_fin} à {selectedDisruption.heure_fin}</p>
+                        <p><strong>Intitulé :</strong> {selectedDisruption.intitule || "Non disponible"}</p>
+                        <p><strong>Résumé :</strong> {selectedDisruption.resume || "Non disponible"}</p>
                         <button onClick={() => setSelectedDisruption(null)}>Fermer</button>
                     </div>
                 </div>
