@@ -7,9 +7,17 @@ const Favorite = ({ clickOnStop }) => {
     const [favorites, setFavorites] = useState([]);
     const [favoriteInfos, setFavoriteInfos] = useState({});
 
+    
     useEffect(() => {
-        const favs = JSON.parse(localStorage.getItem('favorites')) || [];
-        setFavorites(favs);
+        const favs = JSON.parse(localStorage.getItem('favorites')) || {};
+
+        // Transformer l'objet en tableau d'arrêts et leurs lignes
+        const formattedFavorites = Object.entries(favs).map(([stopName, lines]) => ({
+            stopName,
+            lines: Object.keys(lines), // Convertir les lignes en tableau ["1", "2", "3", "26"]
+        }));
+
+        setFavorites(formattedFavorites);
     }, []);
 
     useEffect(() => {
@@ -17,8 +25,9 @@ const Favorite = ({ clickOnStop }) => {
             const stops = await fetchStops();
             const infos = {};
 
+            // Parcours des arrêts favoris pour récupérer leurs codes et leurs horaires
             for (const favStop of favorites) {
-                const cleanedName = favStop.trim().toLowerCase();
+                const cleanedName = favStop.stopName.trim().toLowerCase();
                 const stopCodes = stops
                     .filter(stop => stop.libelle.trim().toLowerCase() === cleanedName)
                     .map(stop => stop.codeLieu);
@@ -38,11 +47,11 @@ const Favorite = ({ clickOnStop }) => {
                             allTimes.push({ ligne, terminus, temps });
                         });
                     } catch (err) {
-                        console.error(`Erreur lors du fetch pour ${favStop}`, err);
+                        console.error(`Erreur lors du fetch pour ${favStop.stopName}`, err);
                     }
                 }
 
-                infos[favStop] = allTimes;
+                infos[favStop.stopName] = allTimes;
             }
 
             setFavoriteInfos(infos);
@@ -53,43 +62,120 @@ const Favorite = ({ clickOnStop }) => {
         }
     }, [favorites]);
 
+    const removeFavoriteLine = (stopName, line) => {
+        const favs = JSON.parse(localStorage.getItem('favorites')) || {};
+    
+        if (favs[stopName]) {
+            delete favs[stopName][line]; // Supprime la ligne du favori
+    
+            // Si plus aucune ligne n'est enregistrée pour cet arrêt, supprime complètement l'arrêt
+            if (Object.keys(favs[stopName]).length === 0) {
+                delete favs[stopName];
+            }
+        }
+    
+        localStorage.setItem('favorites', JSON.stringify(favs));
+        
+        // Mettre à jour l'état pour refléter le changement
+        const updatedFavorites = Object.entries(favs).map(([stopName, lines]) => ({
+            stopName,
+            lines: Object.keys(lines),
+        }));
+        
+        setFavorites(updatedFavorites);
+    };
+    
     return (
         <div>
             {favorites.length === 0 ? (
                 <p>Aucun arrêt en favori</p>
             ) : (
                 favorites.map((favStop, index) => {
-                    const infos = favoriteInfos[favStop] || [];
-                    const firstLine = infos[0] || {};
-                    const ligne = firstLine.ligne || '';
-                    const terminus = firstLine.terminus || '';
-                    const temps = firstLine.temps || '';
+                    const { stopName, lines } = favStop;
+                    const infos = favoriteInfos[stopName] || [];
 
                     return (
-                        <div className="block-link" key={index} onClick={() => clickOnStop(favStop)}>
-                            <div className="block">
-                                <div className="picinfos">
-                                    <div className="pic">
-                                        {ligne ? (
-                                            <img src={`../../pics/Picto ligne ${ligne}.svg`} alt={`Ligne ${ligne}`} />
+                        <div className="stop" key={index} onClick={() => clickOnStop(stopName)}>
+                            <div className="presentation">
+                                <div className="infos">
+                                    <div className="name">
+                                        <h2>{stopName}</h2>
+                                    </div>
+                                    <div className="lines">
+                                        {lines.length > 0 ? (
+                                            lines.map((line, idx) => (
+                                                <img
+                                                    key={idx}
+                                                    src={`../../pics/Picto ligne ${line}.svg`}
+                                                    alt={`Ligne ${line}`}
+                                                />
+                                            ))
                                         ) : (
-                                            <div style={{ width: '40px', height: '40px' }} />
+                                            <p>Aucune ligne favorite</p>
                                         )}
                                     </div>
-                                    <div className="infos">
-                                        <h2>{ligne ? `${ligne} - ${favStop}` : favStop}</h2>
-                                        <h3>{terminus ? `> ${terminus}` : ''}</h3>
-                                    </div>
-                                </div>
-                                <div className="time">
-                                    {temps ? (
-                                        <p>{temps === 'Proche' ? 'Proche' : temps.replace('mn', ' min')}</p>
-                                    ) : (
-                                        <p>Chargement...</p>
-                                    )}
-                                    <img src="../../icon_rt.svg" alt="Actualiser" />
                                 </div>
                             </div>
+
+                            {/* Affichage des lignes favorites */}
+                            {lines.map((line, idx) => {
+                                const terminusInfo = infos.filter(info => info.ligne === line);
+
+                                return (
+                                    <div key={idx} className="block-plus">
+                                        <div className="picinfos-plus">
+                                            <div className="pic">
+                                                <img
+                                                    src={`../../pics/Picto ligne ${line}.svg`}
+                                                    alt={`Ligne ${line}`}
+                                                />
+                                            </div>
+                                            <div className="infos">
+                                                {/* Affichage des 2 terminus disponibles */}
+                                                <h3>
+                                                    {terminusInfo.slice(0, 2).map((info, tIdx) => (
+                                                        <span key={tIdx}>
+                                                            &gt; {info.terminus}
+                                                            {tIdx < terminusInfo.length - 1 && <br />}
+                                                        </span>
+                                                    ))}
+                                                </h3>
+                                            </div>
+                                        </div>
+
+                                        <div className="times">
+                                            {/* Affichage du temps pour chaque terminus */}
+                                            {terminusInfo.slice(0, 2).map((info, tIdx) => (
+                                                <div key={tIdx} className="times-child">
+                                                    <p>
+                                                        {/* Comparaison des valeurs en normalisant la casse et en supprimant les espaces */}
+                                                        {info.temps?.toLowerCase().trim() === 'proche'
+                                                            ? 'Proche'
+                                                            : info.temps?.toLowerCase().trim() === 'inconnu'
+                                                            ? 'Inconnu'
+                                                            : `${info.temps} `
+                                                        }
+                                                    </p>
+                                                    <img src="../../icon_rt.svg" alt="Refresh Icon" />
+                                                </div>
+                                            ))}
+
+                                        </div>
+
+                                        {/* Icône d'étoile activée pour les favoris */}
+                                            <div className="favorite" onClick={(e) => {
+                                                e.stopPropagation(); // Empêche l'événement de remonter au parent
+                                                removeFavoriteLine(stopName, line);
+                                            }}>
+                                                <img
+                                                    src="../../Star_fill.svg"
+                                                    alt="Favori"
+                                                    style={{ width: '50px', height: '50px', cursor: 'pointer' }}
+                                                />
+                                            </div>
+                                    </div>
+                                );
+                            })}
                         </div>
                     );
                 })

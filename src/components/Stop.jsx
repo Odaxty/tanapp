@@ -11,6 +11,7 @@ const Stop = ({ stopName, onBack }) => {
     const [favorite, setFavorite] = useState(false);
     const [selectedDisruption, setSelectedDisruption] = useState(null);
     const [disruptionDetails, setDisruptionDetails] = useState(null);
+    const [favoriteLines, setFavoriteLines] = useState({});
 
     // console.log(linesInfo);
 
@@ -51,22 +52,32 @@ const Stop = ({ stopName, onBack }) => {
     }, [stopName]);
 
     useEffect(() => {
-        const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-        setFavorite(favorites.includes(stopName));
-    }, [stopName]);
+    const savedFavorites = JSON.parse(localStorage.getItem('favorites')) || {};
+    setFavoriteLines(savedFavorites[stopName] || {}); // permet d'afficher els lignes déja mis en favorits
+        }, [stopName]);
 
-    const toggleFavorite = () => {
-        const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-        let updatedFavorites;
-
-        if (favorites.includes(stopName)) {
-            updatedFavorites = favorites.filter(fav => fav !== stopName);
+    const toggleFavorite = (line) => {
+        const savedFavorites = JSON.parse(localStorage.getItem('favorites')) || {};
+    
+        // Récupérer les favoris de l'arrêt actuel
+        const stopFavorites = savedFavorites[stopName] || {};
+        
+        // Basculer l'état de la ligne (ajouter/supprimer)
+        const updatedFavorites = { ...stopFavorites };
+        if (updatedFavorites[line]) {
+            delete updatedFavorites[line]; // Supprimer si déjà favori
+            if (Object.keys(updatedFavorites).length === 0) {
+                delete savedFavorites[stopName]; // Supprimer l'arrêt si vide
+            }
         } else {
-            updatedFavorites = [...favorites, stopName];
+            updatedFavorites[line] = true; // Ajouter comme favori
         }
-
-        localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
-        setFavorite(!favorite);
+        // Mise à jour des favoris dans localStorage
+        const newFavorites = { ...savedFavorites, [stopName]: updatedFavorites };
+        localStorage.setItem('favorites', JSON.stringify(newFavorites));
+    
+        // Mettre à jour l'état React
+        setFavoriteLines(updatedFavorites);
     };
 
     useEffect(() => {
@@ -204,9 +215,6 @@ const Stop = ({ stopName, onBack }) => {
                         )}
                     </div>
                 </div>
-                <div className="favorite" onClick={toggleFavorite}>
-                    <img src={favorite ? '../../Star_fill.svg' : '../../Star_light.svg'} alt="Favori" />
-                </div>
             </div>
             {Object.keys(linesInfo).map((line, index) => (
                 <div key={index} className="block-plus">
@@ -254,7 +262,14 @@ const Stop = ({ stopName, onBack }) => {
                         </div>
 
                     )}
-
+                    {/* Étoile pour chaque ligne */}
+                    <div className="favorite" onClick={() => toggleFavorite(line)}>
+                        <img 
+                            src={favoriteLines[line] ? '../../Star_fill.svg' : '../../Star_light.svg'} 
+                            alt="Favori" 
+                            style={{ width: '50px', height: '50px' }} 
+                        />
+                    </div>
 
                 </div>
             ))}
