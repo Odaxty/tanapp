@@ -12,7 +12,7 @@ const Stop = ({ stopName, onBack }) => {
     const [selectedDisruption, setSelectedDisruption] = useState(null);
     const [disruptionDetails, setDisruptionDetails] = useState(null);
 
-    console.log(affectedLines);
+    // console.log(linesInfo);
 
     const [disruptions, setDisruptions] = useState([]);
 
@@ -95,12 +95,23 @@ const Stop = ({ stopName, onBack }) => {
                                 allLinesInfo[numLigne].terminusInfo[terminusName] = [];
                             }
 
+
+
                             if (temps) {
-                                const time = temps === 'proche' ? temps : (temps === "" ? "Inconnu" : parseInt(temps.match(/\d+/)?.[0], 10));
-                                if (time === 'proche' || time === 'Inconnu' || !isNaN(time)) {
-                                    allLinesInfo[numLigne].terminusInfo[terminusName].push(time);
+                                let time = "Inconnu"; // Valeur par défaut
+
+                                if (temps === "proche") {
+                                    time = "proche";
+                                } else if (temps.trim() !== "") {
+                                    const match = temps.match(/\d+/); // Récupère le premier nombre trouvé
+                                    time = match ? parseInt(match[0], 10) : temps; // Convertit en entier si un nombre est trouvé
                                 }
+
+                                console.log(time);
+                                allLinesInfo[numLigne].terminusInfo[terminusName].push(time);
                             }
+
+
                         }
                     });
                 } catch (error) {
@@ -108,13 +119,15 @@ const Stop = ({ stopName, onBack }) => {
                 }
             }
 
+
             const formattedLinesInfo = {};
             for (const line in allLinesInfo) {
                 formattedLinesInfo[line] = { terminusInfo: {} };
 
                 for (const terminus in allLinesInfo[line].terminusInfo) {
+                    console.log("Debug - Temps avant filtrage:", allLinesInfo[line].terminusInfo[terminus]);
                     const validTimes = allLinesInfo[line].terminusInfo[terminus]
-                        .filter(t => t === 'proche' || t === 'Inconnu' || !isNaN(t))
+                        .filter(t => t === 'proche' || t === 'Inconnu' || (typeof t === 'number' && !isNaN(t)))
                         .sort((a, b) => {
                             if (a === 'proche') return -1; // 'proche' en premier
                             if (b === 'proche') return 1;
@@ -122,6 +135,8 @@ const Stop = ({ stopName, onBack }) => {
                             if (b === 'Inconnu') return -1;
                             return a - b; // Tri numérique pour les autres cas
                         });
+
+                    if (validTimes.length === 0) validTimes.push("Inconnu");
 
                     if (validTimes.length > 0) {
                         formattedLinesInfo[line].terminusInfo[terminus] = validTimes[0];
@@ -231,12 +246,13 @@ const Stop = ({ stopName, onBack }) => {
                     </div>
                     {affectedLines.includes(line) && (
                         <div className="alerte" onClick={() => {
-                            console.log("Alerte cliquée pour la ligne:", line);
+                            // console.log("Alerte cliquée pour la ligne:", line);
                             const disruptionDetails = disruptions.find(d => d.lineNumber === line)?.details || {};
                             setSelectedDisruption({ line, ...disruptionDetails });
                         }}>
                             !
                         </div>
+
                     )}
 
 
