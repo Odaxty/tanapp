@@ -52,37 +52,37 @@ const Stop = ({ stopName, onBack }) => {
     }, [stopName]);
 
     useEffect(() => {
-    const savedFavorites = JSON.parse(localStorage.getItem('favorites')) || {};
-    setFavoriteLines(savedFavorites[stopName] || {}); // permet d'afficher els lignes déja mis en favorits
-        }, [stopName]);
+        const savedFavorites = JSON.parse(localStorage.getItem('favorites')) || {};
+        setFavoriteLines(savedFavorites[stopName] || {}); // permet d'afficher els lignes déja mis en favorits
+    }, [stopName]);
 
-        const toggleFavorite = (line) => {
-            const savedFavorites = JSON.parse(localStorage.getItem('favorites')) || {};
-        
-            // Récupérer les favoris de l'arrêt actuel
-            const stopFavorites = savedFavorites[stopName] || {};
-        
-            // Basculer l'état de la ligne (ajouter/supprimer)
-            if (stopFavorites[line]) {
-                delete stopFavorites[line]; // Supprimer la ligne si déjà favori
-            } else {
-                stopFavorites[line] = true; // Ajouter comme favori
-            }
-        
-            // Si plus aucune ligne dans l'arrêt, on supprime l'arrêt complètement
-            if (Object.keys(stopFavorites).length === 0) {
-                delete savedFavorites[stopName];
-            } else {
-                savedFavorites[stopName] = stopFavorites; // Sinon, on garde l'arrêt mis à jour
-            }
-        
-            // Mise à jour du localStorage
-            localStorage.setItem('favorites', JSON.stringify(savedFavorites));
-        
-            // Mise à jour de l'état React
-            setFavoriteLines(savedFavorites[stopName] || {}); // Pour rafraîchir les lignes affichées
-        };
-        
+    const toggleFavorite = (line) => {
+        const savedFavorites = JSON.parse(localStorage.getItem('favorites')) || {};
+
+        // Récupérer les favoris de l'arrêt actuel
+        const stopFavorites = savedFavorites[stopName] || {};
+
+        // Basculer l'état de la ligne (ajouter/supprimer)
+        if (stopFavorites[line]) {
+            delete stopFavorites[line]; // Supprimer la ligne si déjà favori
+        } else {
+            stopFavorites[line] = true; // Ajouter comme favori
+        }
+
+        // Si plus aucune ligne dans l'arrêt, on supprime l'arrêt complètement
+        if (Object.keys(stopFavorites).length === 0) {
+            delete savedFavorites[stopName];
+        } else {
+            savedFavorites[stopName] = stopFavorites; // Sinon, on garde l'arrêt mis à jour
+        }
+
+        // Mise à jour du localStorage
+        localStorage.setItem('favorites', JSON.stringify(savedFavorites));
+
+        // Mise à jour de l'état React
+        setFavoriteLines(savedFavorites[stopName] || {}); // Pour rafraîchir les lignes affichées
+    };
+
 
     useEffect(() => {
         let intervalId;
@@ -214,7 +214,7 @@ const Stop = ({ stopName, onBack }) => {
                                     />
                                 ))
                             ) : (
-                                <p>Aucune ligne disponible</p>
+                                <p><img src="../../wait.svg" /></p>
                             )
                         )}
                     </div>
@@ -268,10 +268,10 @@ const Stop = ({ stopName, onBack }) => {
                     )}
                     {/* Étoile pour chaque ligne */}
                     <div className="favorite" onClick={() => toggleFavorite(line)}>
-                        <img 
-                            src={favoriteLines[line] ? '../../Star_fill.svg' : '../../Star_light.svg'} 
-                            alt="Favori" 
-                            style={{ width: '50px', height: '50px' }} 
+                        <img
+                            src={favoriteLines[line] ? '../../Star_fill.svg' : '../../Star_light.svg'}
+                            alt="Favori"
+                            style={{ width: '50px', height: '50px' }}
                         />
                     </div>
 
@@ -283,7 +283,7 @@ const Stop = ({ stopName, onBack }) => {
                 <div className="modal-overlay" onClick={() => setSelectedDisruption(null)}>
                     <div className="modal" onClick={e => e.stopPropagation()}>
                         <h3>Perturbation sur la ligne <img
-                            src={"../../pics/Picto ligne " + selectedDisruption.line + ".svg"} alt=""/></h3>
+                            src={"../../pics/Picto ligne " + selectedDisruption.line + ".svg"} alt="" /></h3>
                         <div className="date">
                             <p><strong>Début
                                 :</strong> {selectedDisruption.date_debut} à {selectedDisruption.heure_debut}</p>
@@ -295,7 +295,7 @@ const Stop = ({ stopName, onBack }) => {
                             <p><strong>Résumé :</strong> {selectedDisruption.resume || "Non disponible"}</p>
                         </div>
                         <button onClick={() => setSelectedDisruption(null)}>
-                            <img src="../../arrow-right.svg" alt=""/>
+                            <img src="../../arrow-right.svg" alt="" />
                         </button>
                     </div>
                 </div>

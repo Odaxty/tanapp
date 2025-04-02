@@ -89,6 +89,7 @@ a {
   height: 4.375rem;
   width: 55.875rem;
   margin-top: 1rem;
+  margin-right: 5rem;
 }
 
 .searchBar {
@@ -133,7 +134,7 @@ a {
   height: 100%;
   width: 10%;
   border: none;
-  border-radius: 0 2.1875rem 2.1875rem 0 ;
+  border-radius: 0 2.1875rem 2.1875rem 0;
   background-color: transparent;
   cursor: pointer;
   transition: 0.3s;
@@ -146,8 +147,10 @@ a {
 .buttonBack {
   background-color: transparent;
   border: none;
-  transform: rotate(180deg);
   cursor: pointer;
+  /* décaler vers la gauche sans bouger les autres éléments */
+  position: relative;
+  left: -2rem;
 }
 
 .buttonBack img {
@@ -364,7 +367,8 @@ input[type=text] {
   gap: 0.63rem;
 }
 
-.block-plus { /*Modif ici*/
+.block-plus {
+  /*Modif ici*/
   position: relative;
   width: 55.875rem;
   height: 9.375rem;
@@ -433,6 +437,7 @@ input[type=text] {
   flex-shrink: 0;
   cursor: pointer;
   margin-top: 2rem;
+  margin-bottom: 2rem;
 
   border: none;
   border-radius: 2.1875rem;
@@ -565,8 +570,7 @@ input[type=text] {
   gap: 0.63rem;
 }
 
-.itemStop .lines .img {
-}
+.itemStop .lines .img {}
 
 .modal-overlay {
   position: fixed;

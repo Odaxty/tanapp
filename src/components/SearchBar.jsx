@@ -47,7 +47,7 @@ const SearchBar = ({ handleSearchStop, setIsFavoriteClicked, onBack, handleClose
     return (
         <div className="fullContentNavBar">
             <button className="buttonBack">
-                <img src="../../arrow-right.svg" onClick={onBack} alt=""/>
+                <img src="../../TANAPP.svg" onClick={onBack} alt="" />
             </button>
             <div className="searchBar">
                 <input
@@ -59,7 +59,7 @@ const SearchBar = ({ handleSearchStop, setIsFavoriteClicked, onBack, handleClose
                 />
                 <div className="searchBarLine"></div>
                 <button className="searchBarButton" onClick={handleClosestStopClick}>
-                    <img src="../../location.svg" alt=""/>
+                    <img src="../../location.svg" alt="" />
                 </button>
                 {search && (
                     <div className="suggestions-container">
@@ -78,7 +78,7 @@ const SearchBar = ({ handleSearchStop, setIsFavoriteClicked, onBack, handleClose
             </div>
 
             <button className="buttonFavorite" onClick={() => handleFavoriteClick()}>
-                <img src="../../Star_fill.svg" alt=""/>
+                <img src="../../Star_fill.svg" alt="" />
             </button>
         </div>
     );
