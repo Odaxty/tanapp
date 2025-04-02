@@ -157,10 +157,6 @@ a {
   left: -2rem;
 }
 
-.buttonBack img {
-  transition: 0.3s;
-}
-
 .buttonFavorite {
   background-color: transparent;
   border: none;
@@ -168,9 +164,6 @@ a {
   cursor: pointer;
 }
 
-.buttonBack:hover img {
-  transform: translateX(5px);
-}
 
 .buttonFavorite img {
   height: 100%;
@@ -386,6 +379,11 @@ input[type=text] {
   border-radius: 0.9375rem;
   background: rgba(217, 217, 217, 0.16);
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  transition: 0.3s;
+}
+
+.block-plus:hover {
+  transform: scale(1.03);
 }
 
 .picinfos-plus {

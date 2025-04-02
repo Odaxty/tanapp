@@ -271,7 +271,7 @@ const Stop = ({ stopName, onBack }) => {
                         <img
                             src={favoriteLines[line] ? '../../Star_fill.svg' : '../../Star_light.svg'}
                             alt="Favori"
-                            style={{ width: '50px', height: '50px' }}
+                            style={{ width: '50px', height: '50px', cursor: 'pointer' }}
                         />
                     </div>
 

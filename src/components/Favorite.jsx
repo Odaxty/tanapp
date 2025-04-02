@@ -7,7 +7,7 @@ const Favorite = ({ clickOnStop }) => {
     const [favorites, setFavorites] = useState([]);
     const [favoriteInfos, setFavoriteInfos] = useState({});
 
-    
+
     useEffect(() => {
         const favs = JSON.parse(localStorage.getItem('favorites')) || {};
 
@@ -64,27 +64,27 @@ const Favorite = ({ clickOnStop }) => {
 
     const removeFavoriteLine = (stopName, line) => {
         const favs = JSON.parse(localStorage.getItem('favorites')) || {};
-    
+
         if (favs[stopName]) {
             delete favs[stopName][line]; // Supprime la ligne du favori
-    
+
             // Si plus aucune ligne n'est enregistrée pour cet arrêt, supprime complètement l'arrêt
             if (Object.keys(favs[stopName]).length === 0) {
                 delete favs[stopName];
             }
         }
-    
+
         localStorage.setItem('favorites', JSON.stringify(favs));
-        
+
         // Mettre à jour l'état pour refléter le changement
         const updatedFavorites = Object.entries(favs).map(([stopName, lines]) => ({
             stopName,
             lines: Object.keys(lines),
         }));
-        
+
         setFavorites(updatedFavorites);
     };
-    
+
     return (
         <div>
             {favorites.length === 0 ? (
@@ -122,7 +122,7 @@ const Favorite = ({ clickOnStop }) => {
                                 const terminusInfo = infos.filter(info => info.ligne === line);
 
                                 return (
-                                    <div key={idx} className="block-plus">
+                                    <div key={idx} className="block-plus" style={{ cursor: 'pointer' }}>
                                         <div className="picinfos-plus">
                                             <div className="pic">
                                                 <img
@@ -151,8 +151,8 @@ const Favorite = ({ clickOnStop }) => {
                                                         {info.temps?.toLowerCase().trim() === 'proche'
                                                             ? 'Proche'
                                                             : !info.temps || info.temps.trim() === '' // Vérifie si `temps` est vide ou undefined
-                                                            ? 'Inconnu'
-                                                            : `${info.temps} `}
+                                                                ? 'Inconnu'
+                                                                : `${info.temps} `}
                                                     </p>
                                                     <img src="../../icon_rt.svg" alt="Refresh Icon" />
                                                 </div>
@@ -161,16 +161,16 @@ const Favorite = ({ clickOnStop }) => {
 
 
                                         {/* Icône d'étoile activée pour les favoris */}
-                                            <div className="favorite" onClick={(e) => {
-                                                e.stopPropagation(); // Empêche l'événement de remonter au parent
-                                                removeFavoriteLine(stopName, line);
-                                            }}>
-                                                <img
-                                                    src="../../Star_fill.svg"
-                                                    alt="Favori"
-                                                    style={{ width: '50px', height: '50px', cursor: 'pointer' }}
-                                                />
-                                            </div>
+                                        <div className="favorite" onClick={(e) => {
+                                            e.stopPropagation(); // Empêche l'événement de remonter au parent
+                                            removeFavoriteLine(stopName, line);
+                                        }}>
+                                            <img
+                                                src="../../Star_fill.svg"
+                                                alt="Favori"
+                                                style={{ width: '50px', height: '50px', cursor: 'pointer' }}
+                                            />
+                                        </div>
                                     </div>
                                 );
                             })}
