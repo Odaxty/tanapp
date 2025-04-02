@@ -81,10 +81,6 @@ const Stop = ({ stopName, onBack }) => {
         
             // Mise à jour de l'état React
             setFavoriteLines(savedFavorites[stopName] || {}); // Pour rafraîchir les lignes affichées
-            setFavorites(Object.entries(savedFavorites).map(([stopName, lines]) => ({
-                stopName,
-                lines: Object.keys(lines),
-            }))); // Mettre à jour la liste des arrêts
         };
         
 
