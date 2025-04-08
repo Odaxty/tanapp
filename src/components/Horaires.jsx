@@ -1,0 +1,78 @@
+import React, { useEffect, useState } from 'react';
+import { fetchHoraires } from '../services/api';
+
+const Horaires = ({ stopCode, ligne, sens }) => {
+    const [horairesData, setHorairesData] = useState(null);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const getHoraires = async () => {
+            try {
+                const data = await fetchHoraires(stopCode, ligne, sens);
+                if (data) {
+                    setHorairesData(data);
+                } else {
+                    setError('Aucun horaire disponible.');
+                }
+            } catch (err) {
+                setError('Erreur lors de la récupération des horaires.');
+                console.error(err);
+            }
+        };
+
+        getHoraires();
+    }, [stopCode, ligne, sens]);
+
+    if (error) {
+        return <p>{error}</p>;
+    }
+
+    if (!horairesData) {
+        return <p>Chargement des horaires...</p>;
+    }
+
+    return (
+        <div className="horaires-container">
+            <span>Horaires pour l'arrêt </span><span><strong>{horairesData.arret.libelle}</strong></span>
+            <h3>
+                <img
+                    src={`../../pics/Picto ligne ${horairesData.ligne.numLigne}.svg`}
+                    alt={`Ligne ${horairesData.ligne.numLigne}`}
+                />
+                Direction {horairesData.ligne.directionSens1}
+            </h3>
+
+            {!horairesData.horaires.length ? (
+                <p>Aucun horaire théorique n'est disponible.</p>
+            ) : (
+                <>
+                    <h4>Prochains horaires :</h4>
+                    <ul>
+                        {horairesData.prochainsHoraires.map((horaire, index) => (
+                            <li key={index}>
+                                <strong>{horaire.heure}</strong>
+                                {horaire.passages.map((p, i) => (
+                                    <span key={i}>{p}</span>
+                                ))}
+                            </li>
+                        ))}
+                    </ul>
+
+                    <h4>Horaires complets :</h4>
+                    <ul>
+                        {horairesData.horaires.map((horaire, index) => (
+                            <li key={index}>
+                                <strong>{horaire.heure}</strong>
+                                {horaire.passages.map((p, i) => (
+                                    <span key={i}>{p}</span>
+                                ))}
+                            </li>
+                        ))}
+                    </ul>
+                </>
+            )}
+        </div>
+    );
+};
+
+export default Horaires;
