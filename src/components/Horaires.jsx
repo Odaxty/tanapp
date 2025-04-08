@@ -12,7 +12,7 @@ const Horaires = ({ stopCode, ligne, sens }) => {
                 if (data) {
                     setHorairesData(data);
                 } else {
-                    setError('Aucun horaire disponible.');
+                    setHorairesData()
                 }
             } catch (err) {
                 setError('Erreur lors de la récupération des horaires.');
