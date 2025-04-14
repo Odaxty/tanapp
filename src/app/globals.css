@@ -656,3 +656,58 @@ input[type=text] {
     width: 200%;
   }
 }
+.horaires-container {
+  font-family: sans-serif;
+  padding: 20px;
+}
+
+.horaires-container span {
+  font-size: 2em;
+}
+
+.horaires-container h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size:  1.5em;
+  margin-top: 10px;
+  font-weight: normal;
+}
+
+.horaires-container h3 img {
+  height: 40px;
+  vertical-align: middle;
+}
+
+.horaires-container ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.horaires-container li {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background-color: #f9f9f9;
+  border-radius: 15px;
+  padding: 15px 20px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  font-size: 18px;
+}
+
+.horaires-container li:nth-child(even) {
+  background-color: #e0e0e0;
+}
+
+.horaires-container li strong {
+  font-weight: bold;
+  font-size: 20px;
+  width: 40px;
+}
+
+.horaires-container li span {
+  font-size: 18px;
+  margin-right: 10px;
+}

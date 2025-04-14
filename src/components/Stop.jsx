@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { fetchStopTimes, fetchStops, fetchDisruptions } from '../services/api';
+import Horaires from "@/components/Horaires";
 
 const Stop = ({ stopName, onBack }) => {
     const [stopCodes, setStopCodes] = useState([]);
@@ -12,6 +13,7 @@ const Stop = ({ stopName, onBack }) => {
     const [selectedDisruption, setSelectedDisruption] = useState(null);
     const [disruptionDetails, setDisruptionDetails] = useState(null);
     const [favoriteLines, setFavoriteLines] = useState({});
+    const [selectedLine, setSelectedLine] = useState(null);
 
     // console.log(linesInfo);
 
@@ -221,7 +223,7 @@ const Stop = ({ stopName, onBack }) => {
                 </div>
             </div>
             {Object.keys(linesInfo).map((line, index) => (
-                <div key={index} className="block-plus">
+                <div key={index} className="block-plus"  onClick={() => setSelectedLine(line)}>
                     <div className="picinfos-plus">
                         <div className="pic">
                             <img src={`../../pics/Picto ligne ${line}.svg`} alt={`Ligne ${line}`} />
@@ -300,6 +302,14 @@ const Stop = ({ stopName, onBack }) => {
                     </div>
                 </div>
             )}
+
+            {selectedLine && (
+                <div className="horaires-container">
+                    <Horaires stopCode={stopCodes} ligne={selectedLine} sens={1} />
+
+                </div>
+            )}
+
 
 
         </div>

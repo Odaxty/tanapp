@@ -55,7 +55,7 @@ export const fetchDisruptions = async () => {
                     }
                 });
             } catch (error) {
-                console.error('Erreur de parsing des tronçons:', error);
+                console.error('Erreur de parsing gides tronçons:', error);
             }
         });
 
@@ -94,5 +94,41 @@ export const fetchClosestStops = async (lat, long) => {
     } catch (error) {
         console.error("Erreur lors de la récupération des arrêts les plus proches :", error);
         return [];
+    }
+};
+
+export const fetchHoraires = async (stopCode, ligne, sens) => {
+
+    if (!stopCode) {
+        console.error('Code d\'arrêt invalide.');
+        return null;
+    }
+
+    try {
+        const stopTimes = await fetchStopTimes(stopCode);
+
+        const matchingStop = stopTimes.find(item => item.ligne.numLigne === ligne && item.sens === sens);
+
+        console.log('stopCode:', stopCode);
+        console.log('ligne:', ligne);
+        console.log('sens:', sens);
+        console.log('stopTimes:', stopTimes);
+
+        if (matchingStop) {
+            const code = matchingStop.arret.codeArret;
+            console.log(`Code de l'arrêt: ${code}`);
+
+            const baseUrl = `https://open.tan.fr/ewp/horairesarret.json/${code}/${ligne}/${sens}`;
+            console.log('URL des horaires:', baseUrl);
+            const horairesResponse = await axios.get(baseUrl);
+            console.log('Horaires:', horairesResponse.data);
+            return horairesResponse.data;
+        } else {
+            console.warn('Aucun arrêt correspondant trouvé.');
+            return null;
+        }
+    } catch (error) {
+        console.error('Erreur lors de la récupération des horaires:', error);
+        return null;
     }
 };
