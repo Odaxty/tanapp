@@ -12,7 +12,7 @@ const Horaires = ({ stopCode, ligne, sens }) => {
                 if (data) {
                     setHorairesData(data);
                 } else {
-                    setHorairesData([]);
+
                 }
             } catch (err) {
                 setError('Erreur lors de la récupération des horaires.');
@@ -33,7 +33,7 @@ const Horaires = ({ stopCode, ligne, sens }) => {
     }
 
     if (!horairesData) {
-        return <p>Chargement des horaires...</p>;
+        return <p>Horaires indisponible</p>;
     }
 
     return (
@@ -46,6 +46,8 @@ const Horaires = ({ stopCode, ligne, sens }) => {
                 />
                 Direction {horairesData.ligne.directionSens1}
             </h3>
+
+            <h4>v = Horaire uniquement disponible le vendredi</h4>
 
             {!horairesData.horaires.length ? (
                 <p>Aucun horaire théorique n'est disponible.</p>
