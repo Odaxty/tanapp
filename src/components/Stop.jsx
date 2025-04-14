@@ -320,7 +320,7 @@ const Stop = ({ stopName, onBack }) => {
                         </div>
 
                         <div className="navigation-buttons">
-                            {selectedDisruption.index > 0 && (
+                            {disruptions[selectedDisruption.line].length > 1 && selectedDisruption.index > 0 && (
                                 <button className="prev-button" onClick={(e) => {
                                     e.stopPropagation();
                                     setSelectedDisruption(prev => ({
@@ -332,7 +332,7 @@ const Stop = ({ stopName, onBack }) => {
                                 </button>
                             )}
 
-                            {selectedDisruption.index < disruptions[selectedDisruption.line].length - 1 && (
+                            {disruptions[selectedDisruption.line].length > 1 && selectedDisruption.index < disruptions[selectedDisruption.line].length - 1 && (
                                 <button className="next-button" onClick={(e) => {
                                     e.stopPropagation();
                                     setSelectedDisruption(prev => ({
