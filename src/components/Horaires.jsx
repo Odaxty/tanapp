@@ -12,7 +12,7 @@ const Horaires = ({ stopCode, ligne, sens }) => {
                 if (data) {
                     setHorairesData(data);
                 } else {
-                    setHorairesData()
+                    setHorairesData([]);
                 }
             } catch (err) {
                 setError('Erreur lors de la récupération des horaires.');
@@ -22,6 +22,11 @@ const Horaires = ({ stopCode, ligne, sens }) => {
 
         getHoraires();
     }, [stopCode, ligne, sens]);
+
+    const formatHoraire = (heure) => {
+        const heureNum = parseInt(heure, 10);
+        return heureNum >= 24 ? `${heureNum - 24}h` : `${heureNum}h`;
+    };
 
     if (error) {
         return <p>{error}</p>;
@@ -50,7 +55,7 @@ const Horaires = ({ stopCode, ligne, sens }) => {
                     <ul>
                         {horairesData.prochainsHoraires.map((horaire, index) => (
                             <li key={index}>
-                                <strong>{horaire.heure}</strong>
+                                <strong>{formatHoraire(horaire.heure)}</strong>
                                 {horaire.passages.map((p, i) => (
                                     <span key={i}>{p}</span>
                                 ))}
@@ -62,7 +67,7 @@ const Horaires = ({ stopCode, ligne, sens }) => {
                     <ul>
                         {horairesData.horaires.map((horaire, index) => (
                             <li key={index}>
-                                <strong>{horaire.heure}</strong>
+                                <strong>{formatHoraire(horaire.heure)}</strong>
                                 {horaire.passages.map((p, i) => (
                                     <span key={i}>{p}</span>
                                 ))}
