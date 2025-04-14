@@ -19,7 +19,15 @@ const Stop = ({ stopName, onBack }) => {
         line: null,
         index: 0
     });
+    const [showPlanImage, setShowPlanImage] = useState(false);
+    const [planImageUrl, setPlanImageUrl] = useState('');
 
+
+    const extractImageUrl = (resumeText) => {
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        const matches = resumeText.match(urlRegex);
+        return matches ? matches[0] : null;
+    };
 
     // console.log(linesInfo);
 
@@ -32,6 +40,15 @@ const Stop = ({ stopName, onBack }) => {
         };
         loadDisruptions();
     }, []);
+
+    useEffect(() => {
+        if (selectedDisruption.line && disruptions[selectedDisruption.line]) {
+            const currentResume = disruptions[selectedDisruption.line][selectedDisruption.index].resume;
+            const extractedUrl = extractImageUrl(currentResume);
+            setPlanImageUrl(extractedUrl || '');
+            setShowPlanImage(false); // Reset l'affichage de l'image quand on change de perturbation
+        }
+    }, [selectedDisruption, disruptions]);
 
     useEffect(() => {
         const fetchStopCodes = async () => {
@@ -292,7 +309,7 @@ const Stop = ({ stopName, onBack }) => {
                 <div className="modal-overlay" onClick={() => setSelectedDisruption({ line: null, index: 0 })}>
                     <div className="modal" onClick={e => e.stopPropagation()}>
                         <h3>Perturbation sur la ligne <img
-                            src={"../../pics/Picto ligne " + selectedDisruption.line + ".svg"} alt="" />
+                            src={"../../pics/Picto ligne " + selectedDisruption.line + ".svg"} alt=""/>
                             ({selectedDisruption.index + 1}/{disruptions[selectedDisruption.line].length})
                         </h3>
 
@@ -310,39 +327,78 @@ const Stop = ({ stopName, onBack }) => {
                         </p>
 
                         <div className="resume">
-                            <p><strong>Résumé
-                                :</strong> {disruptions[selectedDisruption.line][selectedDisruption.index].resume || "Non disponible"}
+                            <p>
+                                <strong>Résumé:</strong>
+                                {disruptions[selectedDisruption.line][selectedDisruption.index].resume.split('https://')[0]}
                             </p>
+                            {extractImageUrl(disruptions[selectedDisruption.line][selectedDisruption.index].resume) && (
+                                <button
+                                    onClick={() => {
+                                        // Extraire l'URL à chaque clic au cas où elle aurait changé
+                                        const currentResume = disruptions[selectedDisruption.line][selectedDisruption.index].resume;
+                                        setPlanImageUrl(extractImageUrl(currentResume) || '');
+                                        setShowPlanImage(!showPlanImage);
+                                    }}
+                                    className="show-plan-button"
+                                >
+                                    {showPlanImage ? 'Masquer le plan' : 'Voir le plan de déviation'}
+                                </button>
+                            )}
+                            {showPlanImage && planImageUrl && (
+                                <div className="plan-image-container">
+                                    <img
+                                        src={planImageUrl}
+                                        alt="Plan de déviation"
+                                        className="deviation-plan"
+                                    />
+                                </div>
+                            )}
                         </div>
+
 
                         <div className="navigation-buttons">
                             {disruptions[selectedDisruption.line].length > 1 && selectedDisruption.index > 0 && (
-                                <button className="prev-button" onClick={(e) => {
-                                    e.stopPropagation();
-                                    setSelectedDisruption(prev => ({
-                                        ...prev,
-                                        index: prev.index - 1
-                                    }));
-                                }}>
+                                <button
+                                    className="prev-button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setShowPlanImage(false); // Ajoutez cette ligne
+                                        setSelectedDisruption(prev => ({
+                                            ...prev,
+                                            index: prev.index - 1
+                                        }));
+                                    }}
+                                >
                                     Précédent
                                 </button>
                             )}
 
                             {disruptions[selectedDisruption.line].length > 1 && selectedDisruption.index < disruptions[selectedDisruption.line].length - 1 && (
-                                <button className="next-button" onClick={(e) => {
-                                    e.stopPropagation();
-                                    setSelectedDisruption(prev => ({
-                                        ...prev,
-                                        index: prev.index + 1
-                                    }));
-                                }}>
+                                <button
+                                    className="next-button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setShowPlanImage(false); // Ajoutez cette ligne
+                                        setSelectedDisruption(prev => ({
+                                            ...prev,
+                                            index: prev.index + 1
+                                        }));
+                                    }}
+                                >
                                     Suivant
                                 </button>
+
                             )}
                         </div>
 
-                        <button className="close-button" onClick={() => setSelectedDisruption({ line: null, index: 0 })}>
-                            <img src="../../croix.svg" alt="" />
+                        <button
+                            className="close-button"
+                            onClick={() => {
+                                setSelectedDisruption({line: null, index: 0});
+                                setShowPlanImage(false); // Ajoutez cette ligne
+                            }}
+                        >
+                            <img src="../../croix.svg" alt="Fermer"/>
                         </button>
                     </div>
                 </div>
@@ -350,7 +406,7 @@ const Stop = ({ stopName, onBack }) => {
 
             {selectedLine && (
                 <div className="horaires-container">
-                    <Horaires stopCode={stopCodes} ligne={selectedLine} sens={1} />
+                    <Horaires stopCode={stopCodes} ligne={selectedLine} sens={1}/>
 
                 </div>
             )}

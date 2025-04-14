@@ -11,6 +11,24 @@ const Favorite = ({ clickOnStop }) => {
         line: null,
         index: 0
     });
+    const [showPlanImage, setShowPlanImage] = useState(false);
+    const [planImageUrl, setPlanImageUrl] = useState('');
+
+
+    const extractImageUrl = (resumeText) => {
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        const matches = resumeText.match(urlRegex);
+        return matches ? matches[0] : null;
+    };
+
+    useEffect(() => {
+        if (selectedDisruption.line && disruptions[selectedDisruption.line]) {
+            const currentResume = disruptions[selectedDisruption.line][selectedDisruption.index].resume;
+            const extractedUrl = extractImageUrl(currentResume);
+            setPlanImageUrl(extractedUrl || '');
+            setShowPlanImage(false); // Reset l'affichage de l'image quand on change de perturbation
+        }
+    }, [selectedDisruption, disruptions]);
 
     useEffect(() => {
         const loadDisruptions = async () => {
@@ -207,7 +225,7 @@ const Favorite = ({ clickOnStop }) => {
                     <div className="modal" onClick={e => e.stopPropagation()}>
                         <h3>
                             Perturbation sur la ligne
-                            <img src={`../../pics/Picto ligne ${selectedDisruption.line}.svg`} alt="" />
+                            <img src={`../../pics/Picto ligne ${selectedDisruption.line}.svg`} alt=""/>
                             ({selectedDisruption.index + 1}/{disruptions[selectedDisruption.line].length})
                         </h3>
 
@@ -232,8 +250,30 @@ const Favorite = ({ clickOnStop }) => {
                         <div className="resume">
                             <p>
                                 <strong>Résumé:</strong>
-                                {disruptions[selectedDisruption.line][selectedDisruption.index].resume || "Non disponible"}
+                                {disruptions[selectedDisruption.line][selectedDisruption.index].resume.split('https://')[0]}
                             </p>
+                            {extractImageUrl(disruptions[selectedDisruption.line][selectedDisruption.index].resume) && (
+                                <button
+                                    onClick={() => {
+                                        // Extraire l'URL à chaque clic au cas où elle aurait changé
+                                        const currentResume = disruptions[selectedDisruption.line][selectedDisruption.index].resume;
+                                        setPlanImageUrl(extractImageUrl(currentResume) || '');
+                                        setShowPlanImage(!showPlanImage);
+                                    }}
+                                    className="show-plan-button"
+                                >
+                                    {showPlanImage ? 'Masquer le plan' : 'Voir le plan de déviation'}
+                                </button>
+                            )}
+                            {showPlanImage && planImageUrl && (
+                                <div className="plan-image-container">
+                                    <img
+                                        src={planImageUrl}
+                                        alt="Plan de déviation"
+                                        className="deviation-plan"
+                                    />
+                                </div>
+                            )}
                         </div>
 
                         <div className="navigation-buttons">
@@ -270,9 +310,9 @@ const Favorite = ({ clickOnStop }) => {
 
                         <button
                             className="close-button"
-                            onClick={() => setSelectedDisruption({ line: null, index: 0 })}
+                            onClick={() => setSelectedDisruption({line: null, index: 0})}
                         >
-                            <img src="../../croix.svg" alt="Fermer" />
+                            <img src="../../croix.svg" alt="Fermer"/>
                         </button>
                     </div>
                 </div>

@@ -599,6 +599,36 @@ input[type=text] {
   overflow: hidden;
 }
 
+.show-plan-button {
+  background-color: #0066cc;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  margin-top: 10px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.show-plan-button:hover {
+  background-color: #0052a3;
+}
+
+.plan-image-container {
+  margin-top: 15px;
+  border: 1px solid #ddd;
+  padding: 10px;
+  background: #f5f5f5;
+  border-radius: 4px;
+}
+
+.deviation-plan {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
 .modal h3 {
   background-color: #FFD000;
   position: absolute;
