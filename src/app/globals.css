@@ -649,6 +649,36 @@ input[type=text] {
   top: 10px;
 }
 
+.navigation-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.navigation-buttons button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #3756B8;
+  color: white;
+  cursor: pointer;
+  font-family: "Chillax Variable";
+  font-size: 1rem;
+}
+
+.navigation-buttons button:hover {
+  background-color: #2a459d;
+}
+
+.modal .close-button {
+  background-color: transparent;
+  border: none;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  cursor: pointer;
+}
+
 @media screen and (max-width: 1000px) {
   body {
     transform: scale(0.4);

@@ -10,14 +10,20 @@ const Stop = ({ stopName, onBack }) => {
     const [error, setError] = useState(null);
     const [affectedLines, setAffectedLines] = useState([]);
     const [favorite, setFavorite] = useState(false);
-    const [selectedDisruption, setSelectedDisruption] = useState(null);
+   // const [selectedDisruption, setSelectedDisruption] = useState(null);
     const [disruptionDetails, setDisruptionDetails] = useState(null);
     const [favoriteLines, setFavoriteLines] = useState({});
     const [selectedLine, setSelectedLine] = useState(null);
+    const [disruptions, setDisruptions] = useState({});
+    const [selectedDisruption, setSelectedDisruption] = useState({
+        line: null,
+        index: 0
+    });
+
 
     // console.log(linesInfo);
 
-    const [disruptions, setDisruptions] = useState([]);
+   // const [disruptions, setDisruptions] = useState([]);
 
     useEffect(() => {
         const loadDisruptions = async () => {
@@ -268,6 +274,16 @@ const Stop = ({ stopName, onBack }) => {
                         </div>
 
                     )}
+                    {disruptions[line] && disruptions[line].length > 0 && (
+                        <div className="alerte" onClick={() => {
+                            setSelectedDisruption({
+                                line: line,
+                                index: 0
+                            });
+                        }}>
+                            !
+                        </div>
+                    )}
                     {/* Étoile pour chaque ligne */}
                     <div className="favorite" onClick={() => toggleFavorite(line)}>
                         <img
@@ -281,22 +297,55 @@ const Stop = ({ stopName, onBack }) => {
             ))}
             <button className="button-back" onClick={onBack}>Retour</button>
 
-            {selectedDisruption && (
-                <div className="modal-overlay" onClick={() => setSelectedDisruption(null)}>
+            {selectedDisruption.line && disruptions[selectedDisruption.line] && (
+                <div className="modal-overlay" onClick={() => setSelectedDisruption({ line: null, index: 0 })}>
                     <div className="modal" onClick={e => e.stopPropagation()}>
                         <h3>Perturbation sur la ligne <img
-                            src={"../../pics/Picto ligne " + selectedDisruption.line + ".svg"} alt="" /></h3>
+                            src={"../../pics/Picto ligne " + selectedDisruption.line + ".svg"} alt="" />
+                            ({selectedDisruption.index + 1}/{disruptions[selectedDisruption.line].length})
+                        </h3>
+
                         <div className="date">
-                            <p><strong>Début
-                                :</strong> {selectedDisruption.date_debut} à {selectedDisruption.heure_debut}</p>
-                            <p><strong>Fin :</strong> {selectedDisruption.date_fin} à {selectedDisruption.heure_fin}</p>
+                            <p><strong>Début :</strong> {disruptions[selectedDisruption.line][selectedDisruption.index].date_debut}
+                                à {disruptions[selectedDisruption.line][selectedDisruption.index].heure_debut}</p>
+                            <p><strong>Fin :</strong> {disruptions[selectedDisruption.line][selectedDisruption.index].date_fin}
+                                à {disruptions[selectedDisruption.line][selectedDisruption.index].heure_fin}</p>
                         </div>
-                        <p className="title"><strong>Intitulé
-                            :</strong> {selectedDisruption.intitule || "Non disponible"}</p>
+
+                        <p className="title"><strong>Intitulé :</strong>
+                            {disruptions[selectedDisruption.line][selectedDisruption.index].intitule || "Non disponible"}</p>
+
                         <div className="resume">
-                            <p><strong>Résumé :</strong> {selectedDisruption.resume || "Non disponible"}</p>
+                            <p><strong>Résumé :</strong> {disruptions[selectedDisruption.line][selectedDisruption.index].resume || "Non disponible"}</p>
                         </div>
-                        <button onClick={() => setSelectedDisruption(null)}>
+
+                        <div className="navigation-buttons">
+                            {selectedDisruption.index > 0 && (
+                                <button className="prev-button" onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedDisruption(prev => ({
+                                        ...prev,
+                                        index: prev.index - 1
+                                    }));
+                                }}>
+                                    Précédent
+                                </button>
+                            )}
+
+                            {selectedDisruption.index < disruptions[selectedDisruption.line].length - 1 && (
+                                <button className="next-button" onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedDisruption(prev => ({
+                                        ...prev,
+                                        index: prev.index + 1
+                                    }));
+                                }}>
+                                    Suivant
+                                </button>
+                            )}
+                        </div>
+
+                        <button className="close-button" onClick={() => setSelectedDisruption({ line: null, index: 0 })}>
                             <img src="../../arrow-right.svg" alt="" />
                         </button>
                     </div>

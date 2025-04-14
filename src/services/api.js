@@ -30,9 +30,7 @@ export const fetchDisruptions = async () => {
 
     try {
         const response = await axios.get(baseUrl);
-
         const records = response.data.results || [];
-
         const affectedLinesDetails = {};
 
         records.forEach(record => {
@@ -43,32 +41,28 @@ export const fetchDisruptions = async () => {
                     const lineNumber = troncon.split('/')[0].replace('[', '').trim();
                     if (lineNumber) {
                         if (!affectedLinesDetails[lineNumber]) {
-                            affectedLinesDetails[lineNumber] = {
-                                intitule: record.intitule,
-                                resume: record.resume,
-                                date_debut: record.date_debut,  // Ajout de la date de début
-                                date_fin: record.date_fin,  // Ajout de la date de fin
-                                heure_debut: record.heure_debut,
-                                heure_fin: record.heure_fin
-                            };
+                            affectedLinesDetails[lineNumber] = [];
                         }
+
+                        affectedLinesDetails[lineNumber].push({
+                            intitule: record.intitule,
+                            resume: record.resume,
+                            date_debut: record.date_debut,
+                            date_fin: record.date_fin,
+                            heure_debut: record.heure_debut,
+                            heure_fin: record.heure_fin
+                        });
                     }
                 });
             } catch (error) {
-                console.error('Erreur de parsing gides tronçons:', error);
+                console.error('Erreur de parsing des tronçons:', error);
             }
         });
 
-        const affectedLinesArray = Object.keys(affectedLinesDetails).map(lineNumber => ({
-            lineNumber,
-            details: affectedLinesDetails[lineNumber]
-        }));
-
-        console.log('Lignes concernées par une info trafic:', affectedLinesArray);
-        return affectedLinesArray;
+        return affectedLinesDetails;
     } catch (error) {
         console.error('Erreur lors de la récupération des perturbations:', error);
-        return [];
+        return {};
     }
 };
 
