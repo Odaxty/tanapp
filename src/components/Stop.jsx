@@ -264,16 +264,7 @@ const Stop = ({ stopName, onBack }) => {
                             )
                         )).slice(0, 2)}
                     </div>
-                    {affectedLines.includes(line) && (
-                        <div className="alerte" onClick={() => {
-                            // console.log("Alerte cliquée pour la ligne:", line);
-                            const disruptionDetails = disruptions.find(d => d.lineNumber === line)?.details || {};
-                            setSelectedDisruption({ line, ...disruptionDetails });
-                        }}>
-                            !
-                        </div>
 
-                    )}
                     {disruptions[line] && disruptions[line].length > 0 && (
                         <div className="alerte" onClick={() => {
                             setSelectedDisruption({
@@ -351,7 +342,7 @@ const Stop = ({ stopName, onBack }) => {
                         </div>
 
                         <button className="close-button" onClick={() => setSelectedDisruption({ line: null, index: 0 })}>
-                            <img src="../../arrow-right.svg" alt="" />
+                            <img src="../../croix.svg" alt="" />
                         </button>
                     </div>
                 </div>

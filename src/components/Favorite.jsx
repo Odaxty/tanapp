@@ -1,20 +1,37 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { fetchStops, fetchStopTimes } from '../services/api';
+import { fetchStops, fetchStopTimes, fetchDisruptions } from '../services/api';
 
 const Favorite = ({ clickOnStop }) => {
     const [favorites, setFavorites] = useState([]);
     const [favoriteInfos, setFavoriteInfos] = useState({});
+    const [disruptions, setDisruptions] = useState({});
+    const [selectedDisruption, setSelectedDisruption] = useState({
+        line: null,
+        index: 0
+    });
 
+    useEffect(() => {
+        const loadDisruptions = async () => {
+            try {
+                const data = await fetchDisruptions();
+                console.log('Données des perturbations:', data);
+                setDisruptions(data);
+            } catch (error) {
+                console.error('Erreur lors du chargement des perturbations:', error);
+            }
+        };
+
+        loadDisruptions();
+    }, []);
 
     useEffect(() => {
         const favs = JSON.parse(localStorage.getItem('favorites')) || {};
 
-        // Transformer l'objet en tableau d'arrêts et leurs lignes
         const formattedFavorites = Object.entries(favs).map(([stopName, lines]) => ({
             stopName,
-            lines: Object.keys(lines), // Convertir les lignes en tableau ["1", "2", "3", "26"]
+            lines: Object.keys(lines),
         }));
 
         setFavorites(formattedFavorites);
@@ -25,7 +42,6 @@ const Favorite = ({ clickOnStop }) => {
             const stops = await fetchStops();
             const infos = {};
 
-            // Parcours des arrêts favoris pour récupérer leurs codes et leurs horaires
             for (const favStop of favorites) {
                 const cleanedName = favStop.stopName.trim().toLowerCase();
                 const stopCodes = stops
@@ -66,9 +82,8 @@ const Favorite = ({ clickOnStop }) => {
         const favs = JSON.parse(localStorage.getItem('favorites')) || {};
 
         if (favs[stopName]) {
-            delete favs[stopName][line]; // Supprime la ligne du favori
+            delete favs[stopName][line];
 
-            // Si plus aucune ligne n'est enregistrée pour cet arrêt, supprime complètement l'arrêt
             if (Object.keys(favs[stopName]).length === 0) {
                 delete favs[stopName];
             }
@@ -76,7 +91,6 @@ const Favorite = ({ clickOnStop }) => {
 
         localStorage.setItem('favorites', JSON.stringify(favs));
 
-        // Mettre à jour l'état pour refléter le changement
         const updatedFavorites = Object.entries(favs).map(([stopName, lines]) => ({
             stopName,
             lines: Object.keys(lines),
@@ -117,9 +131,9 @@ const Favorite = ({ clickOnStop }) => {
                                 </div>
                             </div>
 
-                            {/* Affichage des lignes favorites */}
                             {lines.map((line, idx) => {
                                 const terminusInfo = infos.filter(info => info.ligne === line);
+                                const lineDisruptions = disruptions[line];
 
                                 return (
                                     <div key={idx} className="block-plus" style={{ cursor: 'pointer' }}>
@@ -131,7 +145,6 @@ const Favorite = ({ clickOnStop }) => {
                                                 />
                                             </div>
                                             <div className="infos">
-                                                {/* Affichage des 2 terminus disponibles */}
                                                 <h3>
                                                     {terminusInfo.slice(0, 2).map((info, tIdx) => (
                                                         <span key={tIdx}>
@@ -144,25 +157,34 @@ const Favorite = ({ clickOnStop }) => {
                                         </div>
 
                                         <div className="times">
-                                            {/* Affichage du temps pour chaque terminus */}
                                             {terminusInfo.slice(0, 2).map((info, tIdx) => (
                                                 <div key={tIdx} className="times-child">
                                                     <p>
                                                         {info.temps?.toLowerCase().trim() === 'proche'
                                                             ? 'Proche'
-                                                            : !info.temps || info.temps.trim() === '' // Vérifie si `temps` est vide ou undefined
+                                                            : !info.temps || info.temps.trim() === ''
                                                                 ? 'Inconnu'
-                                                                : `${info.temps} `}
+                                                                : `${info.temps}`}
                                                     </p>
                                                     <img src="../../icon_rt.svg" alt="Refresh Icon" />
                                                 </div>
                                             ))}
                                         </div>
 
+                                        {lineDisruptions && lineDisruptions.length > 0 && (
+                                            <div className="alerte" onClick={(e) => {
+                                                e.stopPropagation();
+                                                setSelectedDisruption({
+                                                    line: line,
+                                                    index: 0
+                                                });
+                                            }}>
+                                                !
+                                            </div>
+                                        )}
 
-                                        {/* Icône d'étoile activée pour les favoris */}
                                         <div className="favorite" onClick={(e) => {
-                                            e.stopPropagation(); // Empêche l'événement de remonter au parent
+                                            e.stopPropagation();
                                             removeFavoriteLine(stopName, line);
                                         }}>
                                             <img
@@ -177,6 +199,83 @@ const Favorite = ({ clickOnStop }) => {
                         </div>
                     );
                 })
+            )}
+
+            {/* Modal des perturbations */}
+            {selectedDisruption.line && disruptions[selectedDisruption.line] && (
+                <div className="modal-overlay" onClick={() => setSelectedDisruption({ line: null, index: 0 })}>
+                    <div className="modal" onClick={e => e.stopPropagation()}>
+                        <h3>
+                            Perturbation sur la ligne
+                            <img src={`../../pics/Picto ligne ${selectedDisruption.line}.svg`} alt="" />
+                            ({selectedDisruption.index + 1}/{disruptions[selectedDisruption.line].length})
+                        </h3>
+
+                        <div className="date">
+                            <p>
+                                <strong>Début:</strong>
+                                {disruptions[selectedDisruption.line][selectedDisruption.index].date_debut}
+                                {disruptions[selectedDisruption.line][selectedDisruption.index].heure_debut && ` à ${disruptions[selectedDisruption.line][selectedDisruption.index].heure_debut}`}
+                            </p>
+                            <p>
+                                <strong>Fin:</strong>
+                                {disruptions[selectedDisruption.line][selectedDisruption.index].date_fin}
+                                {disruptions[selectedDisruption.line][selectedDisruption.index].heure_fin && ` à ${disruptions[selectedDisruption.line][selectedDisruption.index].heure_fin}`}
+                            </p>
+                        </div>
+
+                        <p className="title">
+                            <strong>Intitulé:</strong>
+                            {disruptions[selectedDisruption.line][selectedDisruption.index].intitule || "Non disponible"}
+                        </p>
+
+                        <div className="resume">
+                            <p>
+                                <strong>Résumé:</strong>
+                                {disruptions[selectedDisruption.line][selectedDisruption.index].resume || "Non disponible"}
+                            </p>
+                        </div>
+
+                        <div className="navigation-buttons">
+                            {selectedDisruption.index > 0 && (
+                                <button
+                                    className="prev-button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setSelectedDisruption(prev => ({
+                                            ...prev,
+                                            index: prev.index - 1
+                                        }));
+                                    }}
+                                >
+                                    Précédent
+                                </button>
+                            )}
+
+                            {selectedDisruption.index < disruptions[selectedDisruption.line].length - 1 && (
+                                <button
+                                    className="next-button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setSelectedDisruption(prev => ({
+                                            ...prev,
+                                            index: prev.index + 1
+                                        }));
+                                    }}
+                                >
+                                    Suivant
+                                </button>
+                            )}
+                        </div>
+
+                        <button
+                            className="close-button"
+                            onClick={() => setSelectedDisruption({ line: null, index: 0 })}
+                        >
+                            <img src="../../croix.svg" alt="Fermer" />
+                        </button>
+                    </div>
+                </div>
             )}
         </div>
     );

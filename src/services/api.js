@@ -35,24 +35,30 @@ export const fetchDisruptions = async () => {
 
         records.forEach(record => {
             try {
+                // Vérifiez que troncons existe et est une string
+                if (!record.troncons || typeof record.troncons !== 'string') return;
+
                 const tronconsArray = record.troncons.split(';');
 
                 tronconsArray.forEach(troncon => {
-                    const lineNumber = troncon.split('/')[0].replace('[', '').trim();
-                    if (lineNumber) {
-                        if (!affectedLinesDetails[lineNumber]) {
-                            affectedLinesDetails[lineNumber] = [];
-                        }
+                    const parts = troncon.split('/');
+                    if (parts.length === 0) return;
 
-                        affectedLinesDetails[lineNumber].push({
-                            intitule: record.intitule,
-                            resume: record.resume,
-                            date_debut: record.date_debut,
-                            date_fin: record.date_fin,
-                            heure_debut: record.heure_debut,
-                            heure_fin: record.heure_fin
-                        });
+                    const lineNumber = parts[0].replace('[', '').trim();
+                    if (!lineNumber) return;
+
+                    if (!affectedLinesDetails[lineNumber]) {
+                        affectedLinesDetails[lineNumber] = [];
                     }
+
+                    affectedLinesDetails[lineNumber].push({
+                        intitule: record.intitule || "Sans titre",
+                        resume: record.resume || "Aucun détail disponible",
+                        date_debut: record.date_debut || "Date inconnue",
+                        date_fin: record.date_fin || "Date inconnue",
+                        heure_debut: record.heure_debut || "",
+                        heure_fin: record.heure_fin || ""
+                    });
                 });
             } catch (error) {
                 console.error('Erreur de parsing des tronçons:', error);

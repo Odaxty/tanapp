@@ -607,7 +607,7 @@ input[type=text] {
   left: 0;
   padding: 5px 10px;
   font-size: 1.5rem;
-  font-weight: bold;
+  font-weight: bolder;
   margin-bottom: 15px;
   display: flex;
   align-items: center;
@@ -650,6 +650,14 @@ input[type=text] {
   margin-top: 20px;
 }
 
+.navigation-buttons .prev-button {
+  margin-right: auto;
+}
+
+.navigation-buttons .next-button {
+  margin-left: auto;
+}
+
 .navigation-buttons button {
   padding: 10px 20px;
   border: none;
@@ -671,9 +679,9 @@ input[type=text] {
   border: none;
   position: absolute;
   right: 10px;
-  top: 10px;
+  top: 8px;
   cursor: pointer;
-  height: 25px;
+  height: 30px;
   color: #333;
 }
 
