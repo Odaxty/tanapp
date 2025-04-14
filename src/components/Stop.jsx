@@ -306,17 +306,22 @@ const Stop = ({ stopName, onBack }) => {
                         </h3>
 
                         <div className="date">
-                            <p><strong>Début :</strong> {disruptions[selectedDisruption.line][selectedDisruption.index].date_debut}
-                                à {disruptions[selectedDisruption.line][selectedDisruption.index].heure_debut}</p>
-                            <p><strong>Fin :</strong> {disruptions[selectedDisruption.line][selectedDisruption.index].date_fin}
-                                à {disruptions[selectedDisruption.line][selectedDisruption.index].heure_fin}</p>
+                            <p><strong>Début
+                                :</strong> {disruptions[selectedDisruption.line][selectedDisruption.index].date_debut} {" à "} {disruptions[selectedDisruption.line][selectedDisruption.index].heure_debut}
+                            </p>
+                            <p><strong>Fin
+                                :</strong> {disruptions[selectedDisruption.line][selectedDisruption.index].date_fin} {" à "} {disruptions[selectedDisruption.line][selectedDisruption.index].heure_fin}
+                            </p>
                         </div>
 
                         <p className="title"><strong>Intitulé :</strong>
-                            {disruptions[selectedDisruption.line][selectedDisruption.index].intitule || "Non disponible"}</p>
+                            {disruptions[selectedDisruption.line][selectedDisruption.index].intitule || "Non disponible"}
+                        </p>
 
                         <div className="resume">
-                            <p><strong>Résumé :</strong> {disruptions[selectedDisruption.line][selectedDisruption.index].resume || "Non disponible"}</p>
+                            <p><strong>Résumé
+                                :</strong> {disruptions[selectedDisruption.line][selectedDisruption.index].resume || "Non disponible"}
+                            </p>
                         </div>
 
                         <div className="navigation-buttons">

@@ -588,65 +588,60 @@ input[type=text] {
 }
 
 .modal {
-  background: white;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   padding: 20px;
-  border-radius: 30px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  max-width: 70%;
-  height: 80%;
-  text-align: center;
+  width: 40%;
+  //max-width: 600px;
   position: relative;
+  margin: auto;
+  overflow: hidden;
 }
 
 .modal h3 {
   background-color: #FFD000;
-  width: 100%;
-  height: 70px;
   position: absolute;
-  left: 0;
+  width: 100%;
   top: 0;
-  border-radius: 30px 30px 0 0;
+  left: 0;
+  padding: 5px 10px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 15px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-weight: 600;
-}
-
-.modal h3 img {
-  margin-left: 10px;
+  gap: 10px;
 }
 
 .modal .date {
-  height: 15%;
+  margin-top: 30px;
+  margin-bottom: 15px;
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
 .modal .title {
-  height: 15%;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 
 .modal .resume {
-  height: 60%;
-  overflow-y: scroll;
-  width: 100%;
-  z-index: 100;
+  font-size: 1rem;
+  line-height: 1.5;
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 10px;
 }
 
-.modal p {
-  color: #000;
-  margin: 5px 0;
-  padding-left: 10px;
+.modal .resume::-webkit-scrollbar {
+  width: 6px;
 }
 
-.modal p strong {
-  font-weight: 600;
-}
-
-.modal button {
-  background-color: transparent;
-  border: none;
-  position: absolute;
-  right: 10px;
-  top: 10px;
+.modal .resume::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 3px;
 }
 
 .navigation-buttons {
@@ -664,6 +659,7 @@ input[type=text] {
   cursor: pointer;
   font-family: "Chillax Variable";
   font-size: 1rem;
+  transition: background-color 0.3s;
 }
 
 .navigation-buttons button:hover {
@@ -677,6 +673,18 @@ input[type=text] {
   right: 10px;
   top: 10px;
   cursor: pointer;
+  height: 25px;
+  color: #333;
+}
+
+.modal .close-button img {
+  width: 100%;
+  height: 100%;
+}
+
+
+.modal .close-button:hover {
+  color: #000;
 }
 
 @media screen and (max-width: 1000px) {
