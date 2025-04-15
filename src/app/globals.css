@@ -57,7 +57,6 @@ body {
   background: var(--foreground);
   color: #000;
   font-family: "Chillax Variable";
-  font-size: 2.0625rem;
   font-style: normal;
   font-weight: 500;
   line-height: normal;
@@ -80,6 +79,10 @@ a {
   html {
     color-scheme: dark;
   }
+}
+
+.noneFavStops {
+  font-size: 2.0625rem;
 }
 
 .fullContentNavBar {
@@ -269,6 +272,7 @@ input[type=text] {
 
 .suggestion-item-text {
   cursor: pointer;
+  font-size: 2.0625rem;
 }
 
 .infos {
@@ -593,7 +597,7 @@ input[type=text] {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   padding: 20px;
   width: 40%;
-  //max-width: 600px;
+  height: auto;
   position: relative;
   margin: auto;
   overflow: hidden;
@@ -660,7 +664,7 @@ input[type=text] {
 .modal .resume {
   font-size: 1rem;
   line-height: 1.5;
-  max-height: 200px;
+  max-height: 25rem;
   overflow-y: auto;
   padding-right: 10px;
 }
@@ -734,6 +738,7 @@ input[type=text] {
 }
 .horaires-container {
   font-family: sans-serif;
+  width: 100%;
   padding: 20px;
 }
 

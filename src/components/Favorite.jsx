@@ -120,7 +120,7 @@ const Favorite = ({ clickOnStop }) => {
     return (
         <div>
             {favorites.length === 0 ? (
-                <p>Aucun arrêt en favori</p>
+                <p className="noneFavStops">Aucun arrêt en favori</p>
             ) : (
                 favorites.map((favStop, index) => {
                     const { stopName, lines } = favStop;
