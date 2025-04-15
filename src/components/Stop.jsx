@@ -27,6 +27,12 @@ const Stop = ({ stopName, onBack }) => {
     };
 
     useEffect(() => {
+        // Réinitialiser les états lorsque l'arrêt change
+        setSelectedLine(null);
+        setSelectedSens(1);
+    }, [stopName]);
+
+    useEffect(() => {
         const loadDisruptions = async () => {
             const data = await fetchDisruptions();
             setDisruptions(data);
