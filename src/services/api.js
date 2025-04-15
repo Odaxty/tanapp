@@ -98,37 +98,37 @@ export const fetchClosestStops = async (lat, long) => {
 };
 
 export const fetchHoraires = async (stopCode, ligne, sens) => {
-
-    if (!stopCode) {
-        console.error('Code d\'arrêt invalide.');
+    if (!stopCode || !ligne || sens === undefined) {
+        console.error("Paramètres invalides pour fetchHoraires.");
         return null;
     }
 
     try {
         const stopTimes = await fetchStopTimes(stopCode);
+        console.log("stopTimes récupérés :", stopTimes);
 
-        const matchingStop = stopTimes.find(item => item.ligne.numLigne === ligne && item.sens === sens);
+        // On cherche une correspondance avec ligne et sens
+        const matchingStop = stopTimes.find(item =>
+            item.ligne.numLigne === ligne && item.sens === sens
+        );
 
-        console.log('stopCode:', stopCode);
-        console.log('ligne:', ligne);
-        console.log('sens:', sens);
-        console.log('stopTimes:', stopTimes);
-
-        if (matchingStop) {
-            const code = matchingStop.arret.codeArret;
-            console.log(`Code de l'arrêt: ${code}`);
-
-            const baseUrl = `https://open.tan.fr/ewp/horairesarret.json/${code}/${ligne}/${sens}`;
-            console.log('URL des horaires:', baseUrl);
-            const horairesResponse = await axios.get(baseUrl);
-            console.log('Horaires:', horairesResponse.data);
-            return horairesResponse.data;
-        } else {
-            console.warn('Aucun arrêt correspondant trouvé.');
+        if (!matchingStop) {
+            console.warn("Aucun arrêt correspondant trouvé.");
             return null;
         }
+
+        const codeArret = matchingStop.arret.codeArret;
+        console.log(`Code de l'arrêt utilisé : ${codeArret}`);
+
+        const url = `https://open.tan.fr/ewp/horairesarret.json/${codeArret}/${ligne}/${sens}`;
+        console.log("URL des horaires :", url);
+
+        const response = await axios.get(url);
+        console.log("Horaires reçus :", response.data);
+
+        return response.data;
     } catch (error) {
-        console.error('Erreur lors de la récupération des horaires:', error);
+        console.error("Erreur lors de la récupération des horaires :", error);
         return null;
     }
 };

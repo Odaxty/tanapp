@@ -790,7 +790,6 @@ input[type=text] {
 
 .horaires-container li span {
   font-size: 18px;
-  margin-right: 10px;
 }
 
 .geo-error {
@@ -816,3 +815,26 @@ input[type=text] {
   background-color: #e24444;
 }
 
+.sens-selector {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.sens-selector button {
+    background-color: #3756B8;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: "Chillax Variable";
+    font-size: 1rem;
+    transition: background-color 0.3s;
+}
+
+.sens-selector button:hover {
+    background-color: #2a459d;
+}

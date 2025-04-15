@@ -11,8 +11,6 @@ const Horaires = ({ stopCode, ligne, sens }) => {
                 const data = await fetchHoraires(stopCode, ligne, sens);
                 if (data) {
                     setHorairesData(data);
-                } else {
-
                 }
             } catch (err) {
                 setError('Erreur lors de la récupération des horaires.');
@@ -36,6 +34,9 @@ const Horaires = ({ stopCode, ligne, sens }) => {
         return <p>Horaires indisponible</p>;
     }
 
+    // Déterminer la direction en fonction du sens
+    const direction = sens === 1 ? horairesData.ligne.directionSens1 : horairesData.ligne.directionSens2;
+
     return (
         <div className="horaires-container">
             <span>Horaires pour l'arrêt </span><span><strong>{horairesData.arret.libelle}</strong></span>
@@ -44,7 +45,7 @@ const Horaires = ({ stopCode, ligne, sens }) => {
                     src={`../../pics/Picto ligne ${horairesData.ligne.numLigne}.svg`}
                     alt={`Ligne ${horairesData.ligne.numLigne}`}
                 />
-                Direction {horairesData.ligne.directionSens1}
+                Direction {direction}
             </h3>
 
             <h4>v = Horaire uniquement disponible le vendredi</h4>

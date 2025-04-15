@@ -1,5 +1,3 @@
-'use client';
-
 import { useEffect, useState } from 'react';
 import { fetchStopTimes, fetchStops, fetchDisruptions } from '../services/api';
 import Horaires from "@/components/Horaires";
@@ -10,7 +8,6 @@ const Stop = ({ stopName, onBack }) => {
     const [error, setError] = useState(null);
     const [affectedLines, setAffectedLines] = useState([]);
     const [favorite, setFavorite] = useState(false);
-   // const [selectedDisruption, setSelectedDisruption] = useState(null);
     const [disruptionDetails, setDisruptionDetails] = useState(null);
     const [favoriteLines, setFavoriteLines] = useState({});
     const [selectedLine, setSelectedLine] = useState(null);
@@ -21,19 +18,13 @@ const Stop = ({ stopName, onBack }) => {
     });
     const [showPlanImage, setShowPlanImage] = useState(false);
     const [planImageUrl, setPlanImageUrl] = useState('');
-
+    const [selectedSens, setSelectedSens] = useState(1);
 
     const extractImageUrl = (resumeText) => {
         const urlRegex = /(https?:\/\/[^\s]+)/g;
         const matches = resumeText.match(urlRegex);
         return matches ? matches[0] : null;
     };
-
-    // console.log(linesInfo);
-
-   // const [disruptions, setDisruptions] = useState([]);
-
-
 
     useEffect(() => {
         const loadDisruptions = async () => {
@@ -80,7 +71,7 @@ const Stop = ({ stopName, onBack }) => {
 
     useEffect(() => {
         const savedFavorites = JSON.parse(localStorage.getItem('favorites')) || {};
-        setFavoriteLines(savedFavorites[stopName] || {}); // permet d'afficher els lignes déja mis en favorits
+        setFavoriteLines(savedFavorites[stopName] || {}); // permet d'afficher les lignes déjà mises en favoris
     }, [stopName]);
 
     const toggleFavorite = (line) => {
@@ -110,7 +101,6 @@ const Stop = ({ stopName, onBack }) => {
         setFavoriteLines(savedFavorites[stopName] || {}); // Pour rafraîchir les lignes affichées
     };
 
-
     useEffect(() => {
         let intervalId;
 
@@ -137,8 +127,6 @@ const Stop = ({ stopName, onBack }) => {
                                 allLinesInfo[numLigne].terminusInfo[terminusName] = [];
                             }
 
-
-
                             if (temps) {
                                 let time = "Inconnu"; // Valeur par défaut
 
@@ -149,11 +137,8 @@ const Stop = ({ stopName, onBack }) => {
                                     time = match ? parseInt(match[0], 10) : temps; // Convertit en entier si un nombre est trouvé
                                 }
 
-                                console.log(time);
                                 allLinesInfo[numLigne].terminusInfo[terminusName].push(time);
                             }
-
-
                         }
                     });
                 } catch (error) {
@@ -161,13 +146,11 @@ const Stop = ({ stopName, onBack }) => {
                 }
             }
 
-
             const formattedLinesInfo = {};
             for (const line in allLinesInfo) {
                 formattedLinesInfo[line] = { terminusInfo: {} };
 
                 for (const terminus in allLinesInfo[line].terminusInfo) {
-                    console.log("Debug - Temps avant filtrage:", allLinesInfo[line].terminusInfo[terminus]);
                     const validTimes = allLinesInfo[line].terminusInfo[terminus]
                         .filter(t => t === 'proche' || t === 'Inconnu' || (typeof t === 'number' && !isNaN(t)))
                         .sort((a, b) => {
@@ -220,6 +203,7 @@ const Stop = ({ stopName, onBack }) => {
                 console.error('Erreur lors de la récupération des perturbations:', error);
             }
         };
+
         if (stopCodes.length > 0) {
             fetchAllLinesInfo();
             fetchDisruptionsData();
@@ -230,7 +214,6 @@ const Stop = ({ stopName, onBack }) => {
             if (intervalId) clearInterval(intervalId);
         };
     }, [stopCodes]);
-
 
     return (
         <div className="stop">
@@ -258,8 +241,9 @@ const Stop = ({ stopName, onBack }) => {
                     </div>
                 </div>
             </div>
+
             {Object.keys(linesInfo).map((line, index) => (
-                <div key={index} className="block-plus"  onClick={() => setSelectedLine(line)}>
+                <div key={index} className="block-plus" onClick={() => setSelectedLine(line)}>
                     <div className="picinfos-plus">
                         <div className="pic">
                             <img src={`../../pics/Picto ligne ${line}.svg`} alt={`Ligne ${line}`} />
@@ -313,9 +297,9 @@ const Stop = ({ stopName, onBack }) => {
                             style={{ width: '50px', height: '50px', cursor: 'pointer' }}
                         />
                     </div>
-
                 </div>
             ))}
+
             <button className="button-back" onClick={onBack}>Retour</button>
 
             {selectedDisruption.line && disruptions[selectedDisruption.line] && (
@@ -368,7 +352,6 @@ const Stop = ({ stopName, onBack }) => {
                             )}
                         </div>
 
-
                         <div className="navigation-buttons">
                             {disruptions[selectedDisruption.line].length > 1 && selectedDisruption.index > 0 && (
                                 <button
@@ -400,7 +383,6 @@ const Stop = ({ stopName, onBack }) => {
                                 >
                                     Suivant
                                 </button>
-
                             )}
                         </div>
 
@@ -419,13 +401,18 @@ const Stop = ({ stopName, onBack }) => {
 
             {selectedLine && (
                 <div className="horaires-container">
-                    <Horaires stopCode={stopCodes} ligne={selectedLine} sens={1}/>
+                    <div className="sens-selector">
+                        <button
+                            onClick={() => setSelectedSens(selectedSens === 1 ? 2 : 1)}
 
+                        >
+                            {selectedSens === 1 ? 'Sens 1' : 'Sens 2'}
+                        </button>
+                    </div>
+                    <Horaires stopCode={stopCodes} ligne={selectedLine} sens={selectedSens} />
                 </div>
+
             )}
-
-
-
         </div>
     );
 };
