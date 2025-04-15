@@ -33,6 +33,8 @@ const Stop = ({ stopName, onBack }) => {
 
    // const [disruptions, setDisruptions] = useState([]);
 
+
+
     useEffect(() => {
         const loadDisruptions = async () => {
             const data = await fetchDisruptions();
@@ -197,16 +199,27 @@ const Stop = ({ stopName, onBack }) => {
                 const disruptions = await fetchDisruptions();
                 const affected = [];
 
-                disruptions.forEach(disruption => {
-                    affected.push(disruption.lineNumber);  // Récupère les numéros de ligne affectés
-                });
+                // Check if disruptions is an array
+                if (Array.isArray(disruptions)) {
+                    disruptions.forEach(disruption => {
+                        affected.push(disruption.lineNumber); // Récupère les numéros de ligne affectés
+                    });
+                } else if (typeof disruptions === 'object' && disruptions !== null) {
+                    // If disruptions is an object, iterate over its keys/values
+                    Object.values(disruptions).forEach(disruption => {
+                        if (disruption.lineNumber) {
+                            affected.push(disruption.lineNumber);
+                        }
+                    });
+                } else {
+                    console.error("Unexpected disruptions format:", disruptions);
+                }
 
                 setAffectedLines(affected);
             } catch (error) {
                 console.error('Erreur lors de la récupération des perturbations:', error);
             }
         };
-
         if (stopCodes.length > 0) {
             fetchAllLinesInfo();
             fetchDisruptionsData();
@@ -328,8 +341,8 @@ const Stop = ({ stopName, onBack }) => {
 
                         <div className="resume">
                             <p>
-                                <strong>Résumé:</strong>
-                                {disruptions[selectedDisruption.line][selectedDisruption.index].resume.split('https://')[0]}
+                                Résumé:
+                                <strong>{disruptions[selectedDisruption.line][selectedDisruption.index].resume.split('https://')[0]}</strong>
                             </p>
                             {extractImageUrl(disruptions[selectedDisruption.line][selectedDisruption.index].resume) && (
                                 <button
