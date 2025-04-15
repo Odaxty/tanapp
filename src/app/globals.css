@@ -792,3 +792,27 @@ input[type=text] {
   font-size: 18px;
   margin-right: 10px;
 }
+
+.geo-error {
+  background-color: #ffe0e0;
+  padding: 1rem;
+  border: 1px solid #ff5555;
+  border-radius: 8px;
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.geo-error button {
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #ff5555;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.geo-error button:hover {
+  background-color: #e24444;
+}
+

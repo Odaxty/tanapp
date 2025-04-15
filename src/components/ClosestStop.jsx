@@ -3,56 +3,63 @@
 import { useEffect, useState } from 'react';
 import { fetchStops } from '../services/api';
 
-const ClosestStop = ({ stopNames, onBack, clickOnStop }) => {
+const ClosestStop = ({ stopNames, onBack, clickOnStop, geoError, retryGeolocation }) => {
     const [stopData, setStopData] = useState([]);
     const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchStopCodes = async () => {
-            setError(null); // Réinitialiser l'erreur à chaque nouvelle tentative
-            setStopData([]); // Réinitialiser les données
+            setError(null);
+            setStopData([]);
 
             try {
                 const stops = await fetchStops();
-                // Convertir stopNames en une liste d'objets avec un libellé et une distance
+
                 const stopMap = stopNames.map(stop => ({
                     libelle: stop.libelle.trim().toLowerCase(),
                     distance: stop.distance
                 }));
 
-                // Créer un tableau pour conserver les arrêts triés dans l'ordre
                 const orderedStops = stopNames.map((stop) => {
-                    // Rechercher l'arrêt dans les données récupérées
-                    const stopFound = stops.find((fetchedStop) => fetchedStop.libelle.trim().toLowerCase() === stop.libelle.trim().toLowerCase());
+                    const stopFound = stops.find((fetchedStop) =>
+                        fetchedStop.libelle.trim().toLowerCase() === stop.libelle.trim().toLowerCase()
+                    );
                     if (stopFound) {
                         return {
                             name: stopFound.libelle,
                             distance: stop.distance,
-                            lines: stopFound.ligne || [] // Si des lignes sont présentes
+                            lines: stopFound.ligne || []
                         };
                     }
                     return null;
-                }).filter(stop => stop !== null); // Filtrer les arrêts non trouvés
+                }).filter(stop => stop !== null);
 
                 if (orderedStops.length === 0) {
                     setError('Aucun arrêt trouvé dans la base de données');
                     return;
                 }
 
-                setStopData(orderedStops); // Mettre à jour les données des arrêts
+                setStopData(orderedStops);
             } catch (error) {
                 console.error('Erreur lors de la récupération des arrêts:', error);
                 setError('Erreur de traitement des données locales');
             }
         };
 
-        fetchStopCodes();
-    }, [stopNames]);
+        if (!geoError && stopNames.length > 0) {
+            fetchStopCodes();
+        }
+    }, [stopNames, geoError]);
 
     return (
         <div className="stop-container">
-            {error ? (
-                <p>{error}</p>
+            {geoError ? (
+                <div className="geo-error">
+                    <p>📍 L’accès à la géolocalisation est désactivé ou a été refusé.</p>
+                    <button onClick={retryGeolocation}>Redemander l'accès</button>
+                </div>
+            ) : stopData.length === 0 ? (
+                <p>Chargement des arrêts proches...</p>
             ) : (
                 stopData.map((stop, index) => (
                     <div key={index} className="closeststops">
