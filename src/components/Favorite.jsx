@@ -7,52 +7,34 @@ const Favorite = ({ clickOnStop }) => {
     const [favorites, setFavorites] = useState([]);
     const [favoriteInfos, setFavoriteInfos] = useState({});
     const [disruptions, setDisruptions] = useState({});
-    const [selectedDisruption, setSelectedDisruption] = useState({
-        line: null,
-        index: 0
-    });
+    const [selectedDisruption, setSelectedDisruption] = useState({ line: null, index: 0 });
     const [showPlanImage, setShowPlanImage] = useState(false);
     const [planImageUrl, setPlanImageUrl] = useState('');
 
-
-    const extractImageUrl = (resumeText) => {
-        const urlRegex = /(https?:\/\/[^\s]+)/g;
-        const matches = resumeText.match(urlRegex);
+    const extractImageUrl = (text) => {
+        const matches = text.match(/(https?:\/\/[^\s]+)/g);
         return matches ? matches[0] : null;
     };
-
-    useEffect(() => {
-        if (selectedDisruption.line && disruptions[selectedDisruption.line]) {
-            const currentResume = disruptions[selectedDisruption.line][selectedDisruption.index].resume;
-            const extractedUrl = extractImageUrl(currentResume);
-            setPlanImageUrl(extractedUrl || '');
-            setShowPlanImage(false); // Reset l'affichage de l'image quand on change de perturbation
-        }
-    }, [selectedDisruption, disruptions]);
 
     useEffect(() => {
         const loadDisruptions = async () => {
             try {
                 const data = await fetchDisruptions();
-                console.log('Données des perturbations:', data);
                 setDisruptions(data);
             } catch (error) {
-                console.error('Erreur lors du chargement des perturbations:', error);
+                console.error('Erreur perturbations:', error);
             }
         };
-
         loadDisruptions();
     }, []);
 
     useEffect(() => {
         const favs = JSON.parse(localStorage.getItem('favorites')) || {};
-
-        const formattedFavorites = Object.entries(favs).map(([stopName, lines]) => ({
+        const formatted = Object.entries(favs).map(([stopName, lines]) => ({
             stopName,
             lines: Object.keys(lines),
         }));
-
-        setFavorites(formattedFavorites);
+        setFavorites(formatted);
     }, []);
 
     useEffect(() => {
@@ -60,87 +42,75 @@ const Favorite = ({ clickOnStop }) => {
             const stops = await fetchStops();
             const infos = {};
 
-            for (const favStop of favorites) {
-                const cleanedName = favStop.stopName.trim().toLowerCase();
-                const stopCodes = stops
-                    .filter(stop => stop.libelle.trim().toLowerCase() === cleanedName)
-                    .map(stop => stop.codeLieu);
+            for (const fav of favorites) {
+                const cleanedName = fav.stopName.trim().toLowerCase();
+                const stopCodes = [...new Set(
+                    stops.filter(s => s.libelle.trim().toLowerCase() === cleanedName).map(s => s.codeLieu)
+                )];
 
-                const uniqueCodes = [...new Set(stopCodes)];
                 const allTimes = [];
 
-                for (const code of uniqueCodes) {
+                for (const code of stopCodes) {
                     try {
                         const stopTimes = await fetchStopTimes(code);
-
-                        stopTimes.forEach(item => {
-                            const ligne = item.ligne?.numLigne || '';
-                            const terminus = item.terminus || '';
-                            const temps = item.temps || '';
-
-                            allTimes.push({ ligne, terminus, temps });
+                        stopTimes.forEach(({ ligne, terminus, temps }) => {
+                            allTimes.push({
+                                ligne: ligne?.numLigne || '',
+                                terminus: terminus || '',
+                                temps: temps || '',
+                            });
                         });
                     } catch (err) {
-                        console.error(`Erreur lors du fetch pour ${favStop.stopName}`, err);
+                        console.error(`Erreur pour ${fav.stopName}`, err);
                     }
                 }
 
-                infos[favStop.stopName] = allTimes;
+                infos[fav.stopName] = allTimes;
             }
 
             setFavoriteInfos(infos);
         };
 
-        if (favorites.length > 0) {
-            loadInfos();
-        }
+        if (favorites.length > 0) loadInfos();
     }, [favorites]);
 
     const removeFavoriteLine = (stopName, line) => {
         const favs = JSON.parse(localStorage.getItem('favorites')) || {};
-
         if (favs[stopName]) {
             delete favs[stopName][line];
-
-            if (Object.keys(favs[stopName]).length === 0) {
-                delete favs[stopName];
-            }
+            if (Object.keys(favs[stopName]).length === 0) delete favs[stopName];
         }
-
         localStorage.setItem('favorites', JSON.stringify(favs));
-
-        const updatedFavorites = Object.entries(favs).map(([stopName, lines]) => ({
-            stopName,
+        const updated = Object.entries(favs).map(([name, lines]) => ({
+            stopName: name,
             lines: Object.keys(lines),
         }));
-
-        setFavorites(updatedFavorites);
+        setFavorites(updated);
     };
+
+    const renderTimes = (info) => {
+        const time = info.temps?.trim().toLowerCase();
+        return time === 'proche' ? 'Proche' : time === '' ? 'Inconnu' : time;
+    };
+
+    const disruptionData = selectedDisruption.line ? disruptions[selectedDisruption.line]?.[selectedDisruption.index] : null;
 
     return (
         <div>
             {favorites.length === 0 ? (
                 <p className="noneFavStops">Aucun arrêt en favori</p>
             ) : (
-                favorites.map((favStop, index) => {
-                    const { stopName, lines } = favStop;
-                    const infos = favoriteInfos[stopName] || [];
-
+                favorites.map((fav, index) => {
+                    const infos = favoriteInfos[fav.stopName] || [];
                     return (
-                        <div className="stop" key={index} onClick={() => clickOnStop(stopName)}>
+                        <div className="stop" key={index} onClick={() => clickOnStop(fav.stopName)}>
                             <div className="presentation">
                                 <div className="infos">
-                                    <div className="name">
-                                        <h2>{stopName}</h2>
-                                    </div>
+                                    <h2>{fav.stopName}</h2>
                                     <div className="lines">
-                                        {lines.length > 0 ? (
-                                            lines.map((line, idx) => (
-                                                <img
-                                                    key={idx}
-                                                    src={`../../pics/Picto ligne ${line}.svg`}
-                                                    alt={`Ligne ${line}`}
-                                                />
+                                        {fav.lines.length > 0 ? (
+                                            fav.lines.map((line, i) => (
+                                                <img key={i} src={`../../pics/Picto ligne ${line}.svg`} alt={`Ligne ${line}`} />
                                             ))
                                         ) : (
                                             <p>Aucune ligne favorite</p>
@@ -149,25 +119,22 @@ const Favorite = ({ clickOnStop }) => {
                                 </div>
                             </div>
 
-                            {lines.map((line, idx) => {
-                                const terminusInfo = infos.filter(info => info.ligne === line);
+                            {fav.lines.map((line, i) => {
+                                const terminusInfo = infos.filter(info => info.ligne === line).slice(0, 2);
                                 const lineDisruptions = disruptions[line];
 
                                 return (
-                                    <div key={idx} className="block-plus" style={{ cursor: 'pointer' }}>
+                                    <div key={i} className="block-plus" style={{ cursor: 'pointer' }}>
                                         <div className="picinfos-plus">
                                             <div className="pic">
-                                                <img
-                                                    src={`../../pics/Picto ligne ${line}.svg`}
-                                                    alt={`Ligne ${line}`}
-                                                />
+                                                <img src={`../../pics/Picto ligne ${line}.svg`} alt={`Ligne ${line}`} />
                                             </div>
                                             <div className="infos">
                                                 <h3>
-                                                    {terminusInfo.slice(0, 2).map((info, tIdx) => (
-                                                        <span key={tIdx}>
+                                                    {terminusInfo.map((info, j) => (
+                                                        <span key={j}>
                                                             &gt; {info.terminus}
-                                                            {tIdx < terminusInfo.length - 1 && <br />}
+                                                            {j < terminusInfo.length - 1 && <br />}
                                                         </span>
                                                     ))}
                                                 </h3>
@@ -175,27 +142,19 @@ const Favorite = ({ clickOnStop }) => {
                                         </div>
 
                                         <div className="times">
-                                            {terminusInfo.slice(0, 2).map((info, tIdx) => (
-                                                <div key={tIdx} className="times-child">
-                                                    <p>
-                                                        {info.temps?.toLowerCase().trim() === 'proche'
-                                                            ? 'Proche'
-                                                            : !info.temps || info.temps.trim() === ''
-                                                                ? 'Inconnu'
-                                                                : `${info.temps}`}
-                                                    </p>
+                                            {terminusInfo.map((info, j) => (
+                                                <div key={j} className="times-child">
+                                                    <p>{renderTimes(info)}</p>
                                                     <img src="../../icon_rt.svg" alt="Refresh Icon" />
                                                 </div>
                                             ))}
                                         </div>
 
-                                        {lineDisruptions && lineDisruptions.length > 0 && (
+                                        {lineDisruptions?.length > 0 && (
                                             <div className="alerte" onClick={(e) => {
                                                 e.stopPropagation();
-                                                setSelectedDisruption({
-                                                    line: line,
-                                                    index: 0
-                                                });
+                                                setSelectedDisruption({ line, index: 0 });
+                                                setShowPlanImage(false);
                                             }}>
                                                 !
                                             </div>
@@ -203,13 +162,9 @@ const Favorite = ({ clickOnStop }) => {
 
                                         <div className="favorite" onClick={(e) => {
                                             e.stopPropagation();
-                                            removeFavoriteLine(stopName, line);
+                                            removeFavoriteLine(fav.stopName, line);
                                         }}>
-                                            <img
-                                                src="../../Star_fill.svg"
-                                                alt="Favori"
-                                                style={{ width: '50px', height: '50px', cursor: 'pointer' }}
-                                            />
+                                            <img src="../../Star_fill.svg" alt="Favori" style={{ width: '50px', height: '50px', cursor: 'pointer' }} />
                                         </div>
                                     </div>
                                 );
@@ -219,100 +174,66 @@ const Favorite = ({ clickOnStop }) => {
                 })
             )}
 
-            {/* Modal des perturbations */}
-            {selectedDisruption.line && disruptions[selectedDisruption.line] && (
+            {disruptionData && (
                 <div className="modal-overlay" onClick={() => setSelectedDisruption({ line: null, index: 0 })}>
                     <div className="modal" onClick={e => e.stopPropagation()}>
                         <h3>
                             Perturbation sur la ligne
-                            <img src={`../../pics/Picto ligne ${selectedDisruption.line}.svg`} alt=""/>
+                            <img src={`../../pics/Picto ligne ${selectedDisruption.line}.svg`} alt="" />
                             ({selectedDisruption.index + 1}/{disruptions[selectedDisruption.line].length})
                         </h3>
 
                         <div className="date">
-                            <p>
-                                <strong>Début:</strong>
-                                {disruptions[selectedDisruption.line][selectedDisruption.index].date_debut}
-                                {disruptions[selectedDisruption.line][selectedDisruption.index].heure_debut && ` à ${disruptions[selectedDisruption.line][selectedDisruption.index].heure_debut}`}
-                            </p>
-                            <p>
-                                <strong>Fin:</strong>
-                                {disruptions[selectedDisruption.line][selectedDisruption.index].date_fin}
-                                {disruptions[selectedDisruption.line][selectedDisruption.index].heure_fin && ` à ${disruptions[selectedDisruption.line][selectedDisruption.index].heure_fin}`}
-                            </p>
+                            <p><strong>Début:</strong> {disruptionData.date_debut} {disruptionData.heure_debut && `à ${disruptionData.heure_debut}`}</p>
+                            <p><strong>Fin:</strong> {disruptionData.date_fin} {disruptionData.heure_fin && `à ${disruptionData.heure_fin}`}</p>
                         </div>
 
-                        <p className="title">
-                            <strong>Intitulé:</strong>
-                            {disruptions[selectedDisruption.line][selectedDisruption.index].intitule || "Non disponible"}
-                        </p>
+                        <p className="title"><strong>Intitulé:</strong> {disruptionData.intitule || 'Non disponible'}</p>
 
                         <div className="resume">
-                            <p>
-                                <strong>Résumé:</strong>
-                                {disruptions[selectedDisruption.line][selectedDisruption.index].resume.split('https://')[0]}
-                            </p>
-                            {extractImageUrl(disruptions[selectedDisruption.line][selectedDisruption.index].resume) && (
-                                <button
-                                    onClick={() => {
-                                        // Extraire l'URL à chaque clic au cas où elle aurait changé
-                                        const currentResume = disruptions[selectedDisruption.line][selectedDisruption.index].resume;
-                                        setPlanImageUrl(extractImageUrl(currentResume) || '');
-                                        setShowPlanImage(!showPlanImage);
-                                    }}
-                                    className="show-plan-button"
-                                >
-                                    {showPlanImage ? 'Masquer le plan' : 'Voir le plan de déviation'}
-                                </button>
-                            )}
-                            {showPlanImage && planImageUrl && (
-                                <div className="plan-image-container">
-                                    <img
-                                        src={planImageUrl}
-                                        alt="Plan de déviation"
-                                        className="deviation-plan"
-                                    />
-                                </div>
+                            <p><strong>Résumé:</strong> {disruptionData.resume.split('https://')[0]}</p>
+
+                            {extractImageUrl(disruptionData.resume) && (
+                                <>
+                                    <button
+                                        onClick={() => {
+                                            setPlanImageUrl(extractImageUrl(disruptionData.resume) || '');
+                                            setShowPlanImage(!showPlanImage);
+                                        }}
+                                        className="show-plan-button"
+                                    >
+                                        {showPlanImage ? 'Masquer le plan' : 'Voir le plan de déviation'}
+                                    </button>
+                                    {showPlanImage && planImageUrl && (
+                                        <div className="plan-image-container">
+                                            <img src={planImageUrl} alt="Plan de déviation" className="deviation-plan" />
+                                        </div>
+                                    )}
+                                </>
                             )}
                         </div>
 
                         <div className="navigation-buttons">
                             {selectedDisruption.index > 0 && (
-                                <button
-                                    className="prev-button"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        setSelectedDisruption(prev => ({
-                                            ...prev,
-                                            index: prev.index - 1
-                                        }));
-                                    }}
-                                >
+                                <button onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedDisruption(prev => ({ ...prev, index: prev.index - 1 }));
+                                }}>
                                     Précédent
                                 </button>
                             )}
-
                             {selectedDisruption.index < disruptions[selectedDisruption.line].length - 1 && (
-                                <button
-                                    className="next-button"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        setSelectedDisruption(prev => ({
-                                            ...prev,
-                                            index: prev.index + 1
-                                        }));
-                                    }}
-                                >
+                                <button onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedDisruption(prev => ({ ...prev, index: prev.index + 1 }));
+                                }}>
                                     Suivant
                                 </button>
                             )}
                         </div>
 
-                        <button
-                            className="close-button"
-                            onClick={() => setSelectedDisruption({line: null, index: 0})}
-                        >
-                            <img src="../../croix.svg" alt="Fermer"/>
+                        <button className="close-button" onClick={() => setSelectedDisruption({ line: null, index: 0 })}>
+                            <img src="../../croix.svg" alt="Fermer" />
                         </button>
                     </div>
                 </div>
