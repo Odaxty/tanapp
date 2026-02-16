@@ -63,8 +63,9 @@ const SearchBar = ({ handleSearchStop, setIsFavoriteClicked, onBack, handleClose
                 </button>
                 {search && (
                     <div className="suggestions-container">
-                        {suggestions.map((suggestion, index) => (
-                            <div key={index} className="suggestion-item">
+                        {suggestions.map((suggestion) => (
+                            <div key={suggestion.libelle} className="suggestion-item">
+
                                 <p
                                     className="suggestion-item-text"
                                     onClick={() => clickOnStop(suggestion.libelle)}  // Passer l'arrêt sélectionné
